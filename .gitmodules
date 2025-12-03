@@ -1,3 +1,6 @@
 [submodule "carrote.py"]
 	path = carrote.py
 	url = https://github.com/CarottePy/carotte.py
+[submodule "sujet"]
+	path = sujet
+	url = https://github.com/hbens/sysnum-2025
