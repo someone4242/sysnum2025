@@ -1,0 +1,3 @@
+[submodule "carrote.py"]
+	path = carrote.py
+	url = https://github.com/CarottePy/carotte.py
