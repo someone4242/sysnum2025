@@ -5,7 +5,7 @@ https://docs.riscv.org/reference/isa/_attachments/riscv-unprivileged.pdf
 
 # Rapport de conception du microprocesseur
 
-Fragment de RISC-V
+Fragment de RISC-V avec architecture de type Harvard.
 
 Instructions de base : add, xor, and, or, addi, load, store, jmp, jz.
 
