@@ -18,3 +18,4 @@ Propositions d'instructions supplémentaires :
 - bit shift
 - multiplicateur: mul
 
+multiplication inverse rapide avec flottant 16 bits => 20/20 (presque) gratuit
