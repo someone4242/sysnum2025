@@ -1,7 +1,7 @@
 
 https://github.com/hbens/sysnum-2025
 
-https://docs.riscv.org/reference/isa/_attachments/riscv-unprivileged.pdf
+https://docs.riscv.org/reference/isa/_attachments/riscv-unprivileged.pdf (add: page 26)
 
 # Rapport de conception du microprocesseur
 
