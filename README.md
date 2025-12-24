@@ -1,7 +1,7 @@
 
 https://github.com/hbens/sysnum-2025
 
-https://docs.riscv.org/reference/isa/_attachments/riscv-unprivileged.pdf (add: page 26)
+https://docs.riscv.org/reference/isa/_attachments/riscv-unprivileged.pdf (add: page 28)
 
 # Rapport de conception du microprocesseur
 
@@ -16,7 +16,7 @@ Registres : RV32I (registres x1 à x31, avec x0 le registre NULL).
 Propositions d'instructions supplémentaires :
 - min, max
 - bit shift
-- multiplicateur: mul
+- multiplicateur: mul (riscv: page 69)
 
-multiplication inverse rapide avec flottant 16 bits => 20/20 (presque) gratuit
+multiplication inverse rapide avec flottant 16 bits . (page 119 pour 32bits)
 NE SURTOUT PAS RESPECTER LA NORME STANDARD!!!!!
