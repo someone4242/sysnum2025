@@ -20,12 +20,3 @@ Propositions d'instructions supplémentaires :
 
 multiplication inverse rapide avec flottant 16 bits . (page 119 pour 32bits)
 NE SURTOUT PAS RESPECTER LA NORME STANDARD!!!!!
-
-
-Ceci est un test pour mon fichier de configuration:
-| encodedecode.py | 16 bits                    | 32 bits                    |
-|-----------------|----------------------------|----------------------------|
-| bus_size        | assert a.bus_size == 16    | assert a.bus_size == 32    |
-| signe           | signe = a[15]              | signe = a[31]              |
-| exposant        | exposant = a[10:15]        | exposant = a[23:31]        |
-| mantisse        | mantisse = a[0:10]         | mantisse = a[0:23]         |
