@@ -11,7 +11,7 @@ def fdecode(a: Variable) -> typing.Tuple[Variable, Variable, Variable]: # Renvoi
     return (signe, exposant,mantisse + exposant_different_zero)
 
 def fencode(s: Variable, e: Variable, m: Variable) -> Variable:
-    return m[0:10] + e + s
+    return m[0:10] + e[0:5] + s
 
 def biais():
     return Constant("1111")
@@ -28,3 +28,4 @@ def main() -> None:
     exposant.set_as_output("exposant")
     mantisse.set_as_output("mantisse")
     r.set_as_output("result")
+
