@@ -87,7 +87,7 @@ def fmultiplie(a: Variable, b: Variable) -> Variable:
     new_signe = signe_a ^ signe_b
     new_mantisse, new_exposant = retire_zeros_gauche(new_mantisse,new_exposant)
 
-    return encodedecode.fencode(new_signe,new_exposant[:5],new_mantisse[:11])
+    return encodedecode.fencode(new_signe,new_exposant,new_mantisse)
 
 
 def mantisse_divise(a: Variable, b: Variable) -> Variable:
@@ -129,7 +129,7 @@ def fdivise(a: Variable, b: Variable) -> Variable:
         a_est_nan = a_est_nan & exposant_a[i]
         b_est_nan = b_est_nan & exposant_b[i]
     
-    return Mux(a_est_nan | b_est_nan | comparer.fegal_zero(b), encodedecode.fencode(new_signe,new_exposant,new_mantisse[:11], encodedecode.nan()))
+    return Mux(a_est_nan | b_est_nan | comparer.fegal_zero(b), encodedecode.fencode(new_signe,new_exposant,new_mantisse, encodedecode.nan()))
 
 def main() -> None:
     n = 16
@@ -138,4 +138,5 @@ def main() -> None:
     #r = fmultiplie(a,b)
     r = fdivise(a,b)
     r.set_as_output("z")
+
 
