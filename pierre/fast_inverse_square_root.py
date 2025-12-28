@@ -15,7 +15,7 @@ def fdecode32(a: Variable) -> typing.Tuple[Variable, Variable, Variable]: # Renv
     return (signe, exposant,mantisse + exposant_different_zero)
 
 def fencode32(s: Variable, e: Variable, m: Variable) -> Variable:
-    return m[0:23] + e + s
+    return m[0:23] + e[0:8] + s
 
 def biais32():
     return Constant("1111111000000000000")
