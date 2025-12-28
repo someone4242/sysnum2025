@@ -21,7 +21,7 @@ def adder(a: Variable, b: Variable, c_in: Variable, i: int | None = None):
     (res_i, c_out) = full_adder(a[i], b[i], c_rest)
     return (res_rest + res_i, c_out)
 
-def multiplier_recursive(a: Variable, b: Variable) -> Variable:
+def multiplie(a: Variable, b: Variable) -> Variable:
     assert a.bus_size == b.bus_size
     n = a.bus_size
     if n == 1:
@@ -72,5 +72,6 @@ def main() -> None:
     n = 32
     a = Input(n)
     b = Input(n)
-    result = multiplier_recursive(a,b)
+    result = multiplie(a,b)
+
     result.set_as_output("result")
