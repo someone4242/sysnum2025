@@ -105,7 +105,7 @@ def round_nearest_to_even(a: Variable) -> Variable:
     entier = Mux(exposant_positif,
                  bitshift.ajouter_zeros_droite(mantisse, adder(biais,inverse_bits(exposant),Constant("1"))[0]),
                  bitshift.ajouter_zeros_gauche(mantisse, adder(exposant,inverse_bits(biais),Constant("1"))[0]))
-    condition_aller_superieur = entier[9] & ((entier[10] & comparer.fegal_zero(Constant("0")+entier[:9])) | ~comparer.fegal_zero(Constant("0")+entier[:9]))
+    condition_aller_superieur = entier[9] & ((entier[10] & comparer.fegal_zero(entier[:10])) | ~comparer.fegal_zero(entier[:10]))
     #return entier[:10],entier[10:]
     entier = entier[10:]
     entier = Mux(signe, entier, adder(inverse_bits(entier),Constant("0"*entier.bus_size),Constant("0"))[0]) # Si négatif, on ajoute 0 car round(-3.5) = -4
