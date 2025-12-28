@@ -4,7 +4,7 @@ import functools
 
 def fegal_zero(a: Variable) -> Variable:
     res = Constant("0")
-    for i in range(1,a.bus_size):
+    for i in range(a.bus_size-1): #pas le bit de signe
         res = res | a[i]
     return ~res
 
@@ -52,3 +52,4 @@ def main() -> None:
     b = Input(n)
     r = plus_grand_strict(a,b)
     r.set_as_output("result")
+
