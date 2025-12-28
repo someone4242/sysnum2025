@@ -124,7 +124,7 @@ def fmultiplie32(a: Variable, b: Variable) -> Variable:
     new_signe = signe_a ^ signe_b
     new_mantisse, new_exposant = retire_zeros_gauche(new_mantisse,new_exposant)
 
-    return fencode32(new_signe,new_exposant[:8],new_mantisse[:23])
+    return fencode32(new_signe,new_exposant,new_mantisse)
 
 
 def fast_inverse_square_root(number: Variable) -> Variable:
