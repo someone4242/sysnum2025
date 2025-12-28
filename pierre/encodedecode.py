@@ -13,6 +13,12 @@ def fdecode(a: Variable) -> typing.Tuple[Variable, Variable, Variable]: # Renvoi
 def fencode(s: Variable, e: Variable, m: Variable) -> Variable:
     return m[0:10] + e + s
 
+def biais():
+    return Constant("1111")
+
+def nan():
+    return Constant("1"*16)
+
 def main() -> None:
     n = 16
     a = Input(n)
