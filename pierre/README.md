@@ -13,38 +13,38 @@ NaN: tous les bits à 1
 
 Listes des fonctions: Les fonctions flottantes ont leur nom commençant par f
 
-*bitshift.py*:
-    **ajouter_zeros_droite**: réalise un bitshift vers la gauche
-    **ajouter_zeros_gauche**: réalise un bitshift vers la droite
+- *bitshift.py*:
+    - **ajouter_zeros_droite**: réalise un bitshift vers la gauche
+    - **ajouter_zeros_gauche**: réalise un bitshift vers la droite
 
-*comparer.py*:
-    **fegal_zero**: renvoie Constant("1) ssi le nombre est un flottant nul (donc sans traiter le bit de signe)
-    **fegal**: renvoie Constant("1") ssi les deux flottants sont strictement égaux
-    **egal**: renvoie Constant("1") ssi les deux int sont égaux
-    **plus_grand_large**: renvoie Constant("1") ssi le premier int est plus grand ou égal au second
-    **plus_grand_strict**: renvoie Constant("1") ssi le premier int est strictement plus grand que le second
+- *comparer.py*:
+    - **fegal_zero**: renvoie Constant("1) ssi le nombre est un flottant nul (donc sans traiter le bit de signe)
+    - **fegal**: renvoie Constant("1") ssi les deux flottants sont strictement égaux
+    - **egal**: renvoie Constant("1") ssi les deux int sont égaux
+    - **plus_grand_large**: renvoie Constant("1") ssi le premier int est plus grand ou égal au second
+    - **plus_grand_strict**: renvoie Constant("1") ssi le premier int est strictement plus grand que le second
 
-*convert.py*:
-    **fround_down**: arrondi à l'entier inférieur
-    **fround_up**: arrondi à l'entier supérieur
-    **fround_nearest_to_even**: arrondi à l'entier le plus proche, avec arrondi au nombre pair le plus proche si sa partie fractionnaire vaut 0.5 (pour éviter les biais)
+- *convert.py*:
+    - **fround_down**: arrondi à l'entier inférieur
+    - **fround_up**: arrondi à l'entier supérieur
+    - **fround_nearest_to_even**: arrondi à l'entier le plus proche, avec arrondi au nombre pair le plus proche si sa partie fractionnaire vaut 0.5 (pour éviter les biais)
 
-*encodedecode.py*: fichier principal à modifier pour passer de 16 à 32 bits
-    **fdecode**: renvoie (signe,exposant,mantisse avec biais implicite)
-    **fencode**: renvoie le flottant à partir de signe, exposant, mantisse avec biais implicite
-    **biais**: renvoie le biais (hardcodé)
-    **nan**: renvoie un nan (hardcodé) 
+- *encodedecode.py*: fichier principal à modifier pour passer de 16 à 32 bits
+    - **fdecode**: renvoie (signe,exposant,mantisse avec biais implicite)
+    - **fencode**: renvoie le flottant à partir de signe, exposant, mantisse avec biais implicite
+    - **biais**: renvoie le biais (hardcodé)
+    - **nan**: renvoie un nan (hardcodé) 
 
-*fadder_et_fmultiplie.py*:
-    **fadd**: réalise l'addition des deux flottants donnés (on aligne les deux exposants, puis on somme)
-    **fmultiplie**: réalise la multiplication des deux flottants donnés (on additionne les exposants et multiplie les deux mantisses)
-    **fdivise**: réalise la division des deux flottants donnés (on soustrait les exposants et divise les deux mantisses). En cas de division par zéro, ou si un des terme est NaN, on renvoie NaN
+- *fadder_et_fmultiplie.py*:
+    - **fadd**: réalise l'addition des deux flottants donnés (on aligne les deux exposants, puis on somme)
+    - **fmultiplie**: réalise la multiplication des deux flottants donnés (on additionne les exposants et multiplie les deux mantisses)
+    - **fdivise**: réalise la division des deux flottants donnés (on soustrait les exposants et divise les deux mantisses). En cas de division par zéro, ou si un des terme est NaN, on renvoie NaN
 
-*fast_inverse_square_root.py*: uniquement flottants 32 bits
+- *fast_inverse_square_root.py*: uniquement flottants 32 bits
     **fast_inverse_square_root**: renvoie l'inverse de la racine carrée du flottant donné
 
-*multiplie.py*:
-    **multiplie**: réalise la multiplication des deux entiers donnés par diviser pour régner (les entiers doivent être de taille une puissance de deux)
+- *multiplie.py*:
+    - **multiplie**: réalise la multiplication des deux entiers donnés par diviser pour régner (les entiers doivent être de taille une puissance de deux)
 
 
 Que modifier pour avoir les flottants en 32 bits au lieu de 16?
