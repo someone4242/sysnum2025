@@ -56,11 +56,8 @@ Que modifier pour avoir les flottants en 32 bits au lieu de 16?
 | *fdecode* | `exposant = a[10:15]`        | `exposant = a[23:31]`        |
 | *fdecode* | `mantisse = a[0:10]`         | `mantisse = a[0:23]`         |
 | *fdecode* | `exposant_different_zero = exposant[0] \| exposant[1] \| exposant[2] \| exposant[3] \| exposant[4]` | `exposant_different_zero = exposant[0] \| exposant[1] \| exposant[2] \| exposant[3] \| exposant[4] \| exposant[5] \| exposant[6] \| exposant[7]` |
-|----------------------------|----------------------------|----------------------------|
 | *fencode* | `return m[0:10] + e[0:5] + s` | `return m[0:23] + e[0:8] + s` |
-|----------------------------|----------------------------|----------------------------|
 | *biais* | `return Constant("1111")` | `return Constant("1111111")` |
-|----------------------------|----------------------------|----------------------------|
 | *nan* | `return Constant("1"*16)` | `return Constant("1"*32)` |
 
 | *fadder_et_fmultiplie.py* | 16 bits                    | 32 bits                    |
@@ -74,7 +71,6 @@ Que modifier pour avoir les flottants en 32 bits au lieu de 16?
 | *fround_down* | `assert a.bus_size == 16` | `assert a.bus_size == 32` |
 | *fround_down* | `mantisse = mantisse + Constant("0"*(32-mantisse.bus_size+10))` | `mantisse = mantisse + Constant("0"*(32-mantisse.bus_size+23))` |
 | *fround_down* | `entier = entier[10:]` | `entier = entier[23:]` |
-|----------------------------|----------------------------|----------------------------|
 | *round_nearest_to_even* | `assert a.bus_size == 16` | `assert a.bus_size == 32` |
 | *round_nearest_to_even* | `mantisse = mantisse + Constant("0"*(32-mantisse.bus_size+10))` | `mantisse = mantisse + Constant("0"*(32-mantisse.bus_size+23))` |
 | *round_nearest_to_even* | `condition_aller_superieur = entier[9] & ((entier[10] & comparer.fegal_zero(entier[:10])) \| ~comparer.fegal_zero(entier[:10]))` | `condition_aller_superieur = entier[22] & ((entier[23] & comparer.fegal_zero(entier[:23])) \| ~comparer.fegal_zero(entier[:23]))` |
