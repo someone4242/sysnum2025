@@ -118,7 +118,7 @@ def fmultiplie32(a: Variable, b: Variable) -> Variable:
     exposant_a = exposant_a + Constant("00000000000")
     exposant_b = exposant_b + Constant("00000000000")
     
-    new_mantisse = multiplie.multiplier_recursive(mantisse_a+Constant("0"*(a.bus_size-mantisse_a.bus_size)),mantisse_b+Constant("0"*(b.bus_size-mantisse_b.bus_size)))
+    new_mantisse = multiplie.multiplie(mantisse_a+Constant("0"*(a.bus_size-mantisse_a.bus_size)),mantisse_b+Constant("0"*(b.bus_size-mantisse_b.bus_size)))
     new_exposant = adder(exposant_a,exposant_b,Constant("0"))[0]
     new_exposant = adder(new_exposant,inverse_bits(biais32()),Constant("1"))[0]
     new_signe = signe_a ^ signe_b
