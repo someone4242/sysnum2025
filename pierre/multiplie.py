@@ -35,10 +35,10 @@ def multiplie(a: Variable, b: Variable) -> Variable:
     b_low = b[0:half]
     b_high = b[half:n]
 
-    p_hh = multiplier_recursive(a_high, b_high)
-    p_hl = multiplier_recursive(a_high, b_low)
-    p_lh = multiplier_recursive(a_low, b_high)
-    p_ll = multiplier_recursive(a_low, b_low)
+    p_hh = multiplie(a_high, b_high)
+    p_hl = multiplie(a_high, b_low)
+    p_lh = multiplie(a_low, b_high)
+    p_ll = multiplie(a_low, b_low)
 
     s, c1 = adder(p_hl, p_lh, Constant("0"))
 
@@ -75,3 +75,4 @@ def main() -> None:
     result = multiplie(a,b)
 
     result.set_as_output("result")
+
