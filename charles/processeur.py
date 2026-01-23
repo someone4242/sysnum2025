@@ -1,34 +1,38 @@
 from lib_carotte import *
+from alu import *
 
 pc_size = 8
+opcode_len = 5
+reg_desc_size = 5
 reg_size = 32
+reg_nb = 32
 instr_size = 32
+word_size = 32
 one = true = Constant("1")
 zero = false = Constant("0")
 val = [zero, one]
 
-# ALU ctrl 0, ALU ctrl 1, ISRC, Mem to Reg, MemWrite, jmp, ALU sr
+# sub, xor, and, or, not, ISRC, Mem to Reg, MemWrite, jmp, ALU sr
 
 str_signal = [
-    "1100001", # add
-    "1000001", # xor
-    "0100001", # and 
-    "0000001", # or 
-    "1100000", # addi 
-    "1101000", # load 
-    "1110100", # store 
-    "1110010", # jmp
-    "1110010"  #jz
+    "00000" + "00001", # add
+    "01000" + "00001", # xor
+    "00100" + "00001", # and 
+    "00010" + "00001", # or 
+    "00000" + "00000", # addi 
+    "00000" + "01000", # load 
+    "00000" + "10100", # store 
+    "00000" + "10010", # jmp
+    "00000" + "10010"  # jz
 ]
 ctrl_signal = [Constant(str_signal[i]) if i < len(str_signal)
-                else Constant("0" * 7) for i in range(32)]
+                else Constant("0" * len(str_signal[0])) for i in range(32)]
 
-def ctrl_signal_select_tree(instr):
-    nb_bits = 5
+def mux_tree(instr, nb_bits, data):
     tree = [zero for i in range(1 << (nb_bits + 1))]
     def build_tree(i, pos):
         if pos == nb_bits:
-            tree[i] = ctrl_signal[i - (1 << nb_bits)]
+            tree[i] = data[i - (1 << nb_bits)]
         else:
             tree[i] = Mux(instr[pos], build_tree(i*2, pos+1), build_tree(i*2+1, pos+1))
         return tree[i]
@@ -41,18 +45,28 @@ def main():
     write_data = Input(pc_size)
     # RAM(addr_size, word_size, read_addr, write_enable, write_addr, write_data)
     pc = RAM(1, pc_size, zero, one, zero, Defer(pc_size, lambda: next_pc)) # program counter
-    reg = [RAM(1, reg_size, zero, Defer(1, lambda: write_enable[i]), zero, Defer(reg_size, lambda: mov_value)) for i in range(32)]
-    reg[0] = Constant("0" * 32)
+    reg = [RAM(1, reg_size, zero, Defer(1, lambda: write_enable[i]), zero, Defer(reg_size, lambda: mov_value)) for i in range(2**reg_desc_size)]
+    reg[0] = Constant("0" * word_size)
 
-    instruction = ROM(pc_size, instr_size, pc)
+    instr = ROM(pc_size, instr_size, pc)
 
-    signal_tree = ctrl_signal_select_tree(instruction)
-    alu_ctrl_0, alu_ctrl_1, isrc, mem_to_reg, mem_write, jmp, alu_sr = signal_tree[1]
+    signal_tree = mux_tree(instr, opcode_len, ctrl_signal)
+    sub_alu, xor_alu, and_alu, or_alu, not_alu, isrc, mem_to_reg, mem_write, jmp, alu_sr = signal_tree[1]
 
-    write_enable = [one for i in range(32)]
-    mov_value = Constant("0" * 32)
+    imm_i = Concat(instr[20:32], Constant("0"*20))
+    imm_s = Concat(instr[7:12], instr[25:32])
+    reg_dest = instr[7:12]
+    reg_src1 = instr[15:20]
+    reg_src2 = instr[20:25]
+    A = mux_tree(reg_src1, reg_desc_size, reg)[1]
+    B = Mux(isrc, mux_tree(reg_src2, reg_desc_size, reg)[1], imm_i)
+    ALU_res, C, V, N, Z = ALU(A, B, sub_alu, xor_alu, and_alu, or_alu, not_alu)
 
-    next_pc = Constant("0" * 8)
+    write_enable = [one for i in range(reg_nb)]
+    mov_value = Constant("0" * word_size)
+
+    next_pc = Constant("0" * pc_size)
     pc.set_as_output("program_counter")
     for i in range(32):
         reg[i].set_as_output("x" + str(i))
+    ALU_res.set_as_output("ALU_output")
