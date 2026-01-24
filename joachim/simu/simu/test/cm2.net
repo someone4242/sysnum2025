@@ -1,0 +1,7 @@
+INPUT x
+OUTPUT r
+VAR x, s, r, _l_3
+IN
+s = REG _l_3
+r = AND x s
+_l_3 = XOR x s

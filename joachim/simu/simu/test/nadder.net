@@ -1,0 +1,35 @@
+INPUT a, b, c
+OUTPUT result, out_carry
+VAR a:4, b:4, c, _a_sel_0, _b_sel_0, _l_5, res_rest, _l_7, _l_8, c_rest, _a_sel_1, _b_sel_1, _l_12, res_i, _l_14, _l_15, c_out, _res_rest_18:2, _a_sel_2, _b_sel_2, _l_21, _res_i_26, _l_23, _l_24, _c_out_27, _res_rest_29:3, _a_sel_3, _b_sel_3, _l_32, _res_i_37, _l_34, _l_35, out_carry, result:4
+IN
+_a_sel_0 = SELECT 0 a
+_b_sel_0 = SELECT 0 b
+_l_5 = XOR _a_sel_0 _b_sel_0
+res_rest = XOR _l_5 c
+_l_7 = AND _l_5 c
+_l_8 = AND _a_sel_0 _b_sel_0
+c_rest = OR _l_7 _l_8
+_a_sel_1 = SELECT 1 a
+_b_sel_1 = SELECT 1 b
+_l_12 = XOR _a_sel_1 _b_sel_1
+res_i = XOR _l_12 c_rest
+_l_14 = AND _l_12 c_rest
+_l_15 = AND _a_sel_1 _b_sel_1
+c_out = OR _l_14 _l_15
+_res_rest_18 = CONCAT res_rest res_i
+_a_sel_2 = SELECT 2 a
+_b_sel_2 = SELECT 2 b
+_l_21 = XOR _a_sel_2 _b_sel_2
+_res_i_26 = XOR _l_21 c_out
+_l_23 = AND _l_21 c_out
+_l_24 = AND _a_sel_2 _b_sel_2
+_c_out_27 = OR _l_23 _l_24
+_res_rest_29 = CONCAT _res_rest_18 _res_i_26
+_a_sel_3 = SELECT 3 a
+_b_sel_3 = SELECT 3 b
+_l_32 = XOR _a_sel_3 _b_sel_3
+_res_i_37 = XOR _l_32 _c_out_27
+_l_34 = AND _l_32 _c_out_27
+_l_35 = AND _a_sel_3 _b_sel_3
+out_carry = OR _l_34 _l_35
+result = CONCAT _res_rest_29 _res_i_37
