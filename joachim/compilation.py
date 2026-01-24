@@ -57,7 +57,7 @@ for i in range(len(instr)):
         rd = read_reg(args[1])
         rs1 = read_reg(args[2])
         rs2 = read_reg(args[3])
-        result = "0"*7 + to_base_2(rs2, 5) + to_base_2(rs1, 5) + "0"*3 + to_base_2(rd, 5) + "0110011" #à vérif
+        result = "0"*7 + to_base_2(rs2, 5) + to_base_2(rs1, 5) + "0"*3 + to_base_2(rd, 5) + "0000000"
         print(result[::-1], file=fdw)
     elif op == "addi":
         if (len(args) != 4):
@@ -65,7 +65,7 @@ for i in range(len(instr)):
         rd = read_reg(args[1])
         rs1 = read_reg(args[2])
         rs2 = int(args[3])
-        result = to_base_2(rs2, 12) + to_base_2(rs1, 5) + "0"*3 + to_base_2(rd, 5) + "0010011" #TODO OP CODE
+        result = to_base_2(rs2, 12) + to_base_2(rs1, 5) + "0"*3 + to_base_2(rd, 5) + "0000010"
         print(result[::-1], file=fdw)
     else:
         raise ValueError("Opération non existante")
