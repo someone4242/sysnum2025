@@ -13,7 +13,7 @@ one_8 = Constant("1" + ("0" * 7))
 zero = false = Constant("0")
 val = [zero, one]
 
-# sub, xor, and, or, not, ISRC, RegWrite, MemWrite, jmp, ALU sr
+# sub, xor, and, or, not, ISRC, Mem to Reg, MemWrite, jmp, ALU sr
 
 str_signal = [
     "00000" + "00001", # add
@@ -21,10 +21,9 @@ str_signal = [
     "00100" + "00001", # and 
     "00100" + "10001", # andi
     "00010" + "00001", # or 
-    "00010" + "10001", # ori 
+    "00010" + "10001", # ori
     "01000" + "00001", # xor
     "01000" + "10001", # xori
-
     "00000" + "10000", # addi 
     "00000" + "01000", # load 
     "00000" + "00100", # store 
@@ -34,13 +33,13 @@ str_signal = [
 ctrl_signal = [Constant(str_signal[i]) if i < len(str_signal)
                 else Constant("0" * len(str_signal[0])) for i in range(32)]
 
-def mux_tree(instr, nb_bits, data):
+def mux_tree(opcode, nb_bits, data):
     tree = [zero for i in range(1 << (nb_bits + 1))]
     def build_tree(i, pos):
         if pos == nb_bits:
             tree[i] = data[i - (1 << nb_bits)]
         else:
-            tree[i] = Mux(instr[pos], build_tree(i*2, pos+1), build_tree(i*2+1, pos+1))
+            tree[i] = Mux(opcode[pos], build_tree(i*2, pos+1), build_tree(i*2+1, pos+1))
         return tree[i]
     build_tree(1, 0)
     return tree
@@ -56,7 +55,7 @@ def main():
     instr = ROM(pc_size, instr_size, pc)
     instr.set_as_output("instruction")
 
-    signal_tree = mux_tree(instr, opcode_len, ctrl_signal)
+    signal_tree = mux_tree([instr[opcode_len-i] for i in range(opcode_len)], opcode_len, ctrl_signal)
     sub_alu, xor_alu, and_alu, or_alu, not_alu, isrc, mem_to_reg, mem_write, jmp, alu_sr = signal_tree[1]
 
     imm_i = Concat(instr[20:32], Constant("0"*20))
@@ -66,6 +65,14 @@ def main():
     reg_src2 = instr[20:25]
     A = mux_tree(reg_src1, reg_desc_size, reg)[1]
     B = Mux(isrc, mux_tree(reg_src2, reg_desc_size, reg)[1], imm_i)
+
+    sub_alu.set_as_output("sub")
+    xor_alu.set_as_output("xor")
+    and_alu.set_as_output("and")
+    or_alu.set_as_output("or")
+    not_alu.set_as_output("not")
+    isrc.set_as_output("isrc")
+    imm_i.set_as_output()
     A.set_as_output("X")
     B.set_as_output("Y")
     ALU_res, C, V, N, Z = ALU(5, A, B, sub_alu, xor_alu, and_alu, or_alu, not_alu)
