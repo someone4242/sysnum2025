@@ -161,6 +161,7 @@ let simulator program number_steps =
     | _ -> assert false in
 
   let nlselect i = function
+    | VBit b when i < 1 -> VBit b
     | VBitArray arr when i < Array.length arr -> VBit arr.(i)
     | _ -> assert false in
 
