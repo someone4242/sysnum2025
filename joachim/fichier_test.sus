@@ -1,12 +1,2 @@
 feur:
-    add x31 x15 x7
-    addi x23 x25 5769420
-    and x31 x15 x7
-    andi x23 x31 0
-    andi x23 x31 -1
-    andi x23 x31 -2
-    andi x23 x31 -3
-    andi x23 x31 -4
-    andi x23 x31 -5
-    andi x23 x31 -6
-    or x31 x31 x31
+    addi x0 x0 16
