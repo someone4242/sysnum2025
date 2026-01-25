@@ -1,12 +1,8 @@
 simulation/netlist_simulator.byte:
 	cd simulation && make build && cd ..
 
-simulation/processeur.net:
-	cd charles/carotte && \
-	rm -f ../../simulation/processeur.net && \ 
-	./carotte.py processeur/processeur.py |> ../../simulation/processeur.net && \ 
-	cd ../..
+processeur.net:
+	rm -f processeur.net && ./charles/carotte/carotte.py ./charles/carotte/processeur/processeur.py |> processeur.net
 
-run: simulation/processeur.net simulation/netlist_simulator.byte
-	cd simulation && \
-	./netlist_simulator.byte -rom program.txt processeur.net 
+run: processeur.net simulation/netlist_simulator.byte
+	rm -f processeur.net &&	./charles/carotte/carotte.py ./charles/carotte/processeur/processeur.py |> processeur.net && simulation/netlist_simulator.byte -rom program.txt processeur.net 
