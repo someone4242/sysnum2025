@@ -31,10 +31,10 @@ str_signal = [
     "10000" + "010010", # srli TODO
     "10000" + "010010", # mul TODO
     "10000" + "010010", # jal TODO
-    "10000" + "010011", # beq TODO
-    "10000" + "010011", # bne TODO
-    "10000" + "010011", # blt TODO
-    "10000" + "010011", # bge TODO
+    "10000" + "010011", # beq 
+    "10000" + "010011", # bne 
+    "10000" + "010011", # blt 
+    "10000" + "010011", # bge 
     "10000" + "010010", # fadd TODO
     "10000" + "010010", # fsub TODO
     "10000" + "010010", # fmul TODO
@@ -85,6 +85,8 @@ def main():
 
     signal_tree = mux_tree([instr[opcode_len - i] for i in range(opcode_len)], opcode_len, ctrl_signal)
     sub_alu, xor_alu, and_alu, or_alu, not_alu, isrc, reg_write, mem_write, jmp, alu_sr, branch = signal_tree[1]
+    slr_alu = false 
+    sll_alu = false
 
     imm_i = Concat(instr[20:32], Constant("0"*20))
     imm_s = Concat(instr[7:12], instr[25:32])[0:pc_size]
@@ -106,7 +108,7 @@ def main():
     B.set_as_output("B")
 
     write_enable = demux_tree(reg_dest, reg_desc_size, [reg_write])
-    ALU_res, C, V, N, Z = ALU(5, A, B, sub_alu, xor_alu, and_alu, or_alu, not_alu)
+    ALU_res, C, V, N, Z = ALU(5, A, B, sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, slr_alu)
     E, LT = Z, N 
     NE, GE = ~E, ~LT
 
@@ -116,7 +118,7 @@ def main():
     #condition = mux_tree([instr[2], instr[1]], 2, [NE, LT, GE, E])
     condition = Mux(instr[2], Mux(instr[1], GE, E), Mux(instr[1], NE, LT))
     pc_offset = Mux(branch & condition, pc_incr, imm_s)
-    next_pc, c, v, n, z = ALU(3, pc, pc_offset, false, false, false, false, false)
+    next_pc, c, v, n, z = ALU(3, pc, pc_offset, false, false, false, false, false, false, false)
     mov_to_reg = [Mux(write_enable[i], reg[i], mov_value) for i in range(32)]
 
     pc.set_as_output("program_counter")

@@ -34,6 +34,32 @@ def is_null(bus):
     n = bus.bus_size // 2
     return is_null(bus[:n]) & is_null(bus[n:])
 
+
+# Bitshifts de Pierre
+
+def ajouter_zeros_droite(a: Variable, decalage: Variable) -> Variable:
+    for i in range(decalage.bus_size):
+        bit = decalage[i]
+        shift_for_bit = 1 << i
+        if shift_for_bit < a.bus_size:
+            shifted_version = a[shift_for_bit:] + Constant("0" * shift_for_bit)
+            a = Mux(bit, a, shifted_version)
+        else:
+            a = Mux(bit, a, Constant("0"*a.bus_size))
+    return a
+
+def ajouter_zeros_gauche(a: Variable, decalage: Variable) -> Variable:
+    for i in range(decalage.bus_size):
+        bit = decalage[i]
+        shift_for_bit = 1 << i
+        if shift_for_bit < a.bus_size:
+            shifted_version = Constant("0" * shift_for_bit) + a[:a.bus_size-shift_for_bit]
+            a = Mux(bit, a, shifted_version)
+        else:
+            a = Mux(bit, a, Constant("0"*a.bus_size))
+    return a
+
+
 # Carry-Lookahead Adder
 
 def gen_prop_1_bit_adder(a, b, c):
@@ -63,7 +89,8 @@ def nadder(N_exp, A, B, C0):
 
 # ALU
 
-def ALU(N_exp, A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp):
+def ALU(N_exp, A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp,
+        Sll_inp, Srl_inp):
     N = 2**N_exp
     nadder_A = A
     nadder_B = bus_unfold_def(N, lambda i : (B[i] ^ Sub_inp) | Not_inp)
@@ -72,13 +99,19 @@ def ALU(N_exp, A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp):
     nadder_S, nadder_C, nadder_XOR, nadder_AND = nadder(
             N_exp, nadder_A, nadder_B, nadder_X)
 
+
+
     arith_out = multi_And([~Xor_inp, ~And_inp, ~Or_inp, ~Not_inp])
     S = bus_unfold_def(N, lambda i : multi_Or([
             arith_out & nadder_S[i],
             And_inp & nadder_AND[i],
             (Xor_inp | Not_inp) & nadder_XOR[i],
-            Or_inp & (nadder_AND[i] | nadder_XOR[i])
+            Or_inp & (nadder_AND[i] | nadder_XOR[i]),
+            Sll_inp & ajouter_zeros_droite(A, B[:N_exp]),
+            Srl_inp & ajouter_zeros_gauche(A, B[:N_exp])
         ]))
+
+
 
     flag_C = nadder_C
     flag_V = And( ~(Xor(A[N-1],B[N-1])), Xor(A[N-1], S[N-1]))
@@ -87,7 +120,7 @@ def ALU(N_exp, A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp):
 
     return S, flag_C, flag_V, flag_N, flag_Z
 
-
+"""
 def main():
     N_exp = 5
     N = 2**N_exp
@@ -107,5 +140,5 @@ def main():
     flag_V.set_as_output("V")
     flag_N.set_as_output("N")
     flag_Z.set_as_output("Z")
-
+"""
 
