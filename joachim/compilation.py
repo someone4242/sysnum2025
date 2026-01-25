@@ -51,6 +51,8 @@ for line_raw in fd:
         if (args[0][-1] != ':'):
             raise ValueError("Labels must end with ':'")
         etiquette = args[0][:-1]
+        if etiquette in labels:
+            raise ValueError(f"Label {etiquette} defined twice")
         labels[etiquette] = len(instr)
         continue
     instr.append(args)
@@ -81,6 +83,34 @@ for i in range(len(instr)):
         rs1 = read_reg(args[2])
         rs2 = read_reg(args[3])
         result = "01" + "0"*5 + to_base_2(rs2, 5) + to_base_2(rs1, 5) + "0"*3 + to_base_2(rd, 5) + op_codes[op]
+        print(result[::-1], file=fdw)
+    elif op in ["slli", "slri"]:
+        if (len(args) != 4):
+            raise ValueError(f"Line {i} : {op} takes 3 arguments")
+        rd = read_reg(args[1])
+        rs1 = read_reg(args[2])
+        rs2 = int(args[3])
+        result = "0"*7 + to_base_2(rs2, 5) + to_base_2(rs1, 5) + three_bits[op] + to_base_2(rd, 5) + op_codes[op]
+        print(result[::-1], file=fdw)
+    elif op in ["jal"]:
+        if (len(args) != 3):
+            raise ValueError(f"Line {i} : {op} takes 2 arguments")
+        rd = read_reg(args[1])
+        dest_label = args[2]
+        if dest_label not in labels:
+            raise ValueError(f"Label {dest_label} does not exist")
+        result = to_base_2(labels[dest_label] - i, 20) + to_base_2(rd, 5) + op_codes[op]
+        print(result[::-1], file=fdw)
+    elif op in ["beq", "bne", "blt"]:
+        if (len(args) != 4):
+            raise ValueError(f"Line {i} : {op} takes 3 arguments")
+        rs1 = read_reg(args[1])
+        rs2 = read_reg(args[2])
+        dest_label = args[3]
+        if dest_label not in labels:
+            raise ValueError(f"Label {dest_label} does not exist")
+        to_cut_offset = to_base_2(labels[dest_label] - i, 12)
+        result = to_cut_offset[:7] + to_base_2(rs2, 5) + to_base_2(rs1, 5) + three_bits[op] + to_cut_offset[7:] + op_codes[op]
         print(result[::-1], file=fdw)
     else:
         raise ValueError("Opération non existante")

@@ -1,2 +1,6 @@
 feur:
     addi x0 x0 16
+    beq x0 x0 quoi
+    addi x0 x0 13
+quoi:
+    addi x0 x0 12
