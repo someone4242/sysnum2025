@@ -20,7 +20,7 @@ def to_base_2(a: int, size: int):
     res = bin(int('0b' + (''.join([str(1 - int(x)) for x in a_opp])), 2)+1)[2:]
     return (size - len(res))*"1" + res
 
-rom_name = "temp"
+rom_name = "instruction"
 file_write_name = "temp.txt"
 file_name = sys.argv[1]
 
@@ -58,7 +58,7 @@ for line_raw in fd:
 for i in range(len(instr)):
     args = instr[i]
     op = args[0]
-    if op in ["add", "and", "or", "xor"]:
+    if op in ["add", "and", "or", "xor", "sll", "srl"]:
         if (len(args) != 4):
             raise ValueError(f"Line {i} : {op} takes 3 arguments")
         rd = read_reg(args[1])
@@ -73,6 +73,14 @@ for i in range(len(instr)):
         rs1 = read_reg(args[2])
         rs2 = int(args[3])
         result = to_base_2(rs2, 12) + to_base_2(rs1, 5) + three_bits[op] + to_base_2(rd, 5) + op_codes[op]
+        print(result[::-1], file=fdw)
+    elif op in ["sub"]:
+        if (len(args) != 4):
+            raise ValueError(f"Line {i} : {op} takes 3 arguments")
+        rd = read_reg(args[1])
+        rs1 = read_reg(args[2])
+        rs2 = read_reg(args[3])
+        result = "01" + "0"*5 + to_base_2(rs2, 5) + to_base_2(rs1, 5) + "0"*3 + to_base_2(rd, 5) + op_codes[op]
         print(result[::-1], file=fdw)
     else:
         raise ValueError("Opération non existante")
