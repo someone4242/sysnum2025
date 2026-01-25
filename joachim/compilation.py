@@ -149,6 +149,32 @@ for i in range(len(instr)):
         rs2 = read_reg(args[3])
         result = "1010000" + to_base_2(rs2, 5) + to_base_2(rs1, 5) + "010" + to_base_2(rd, 5) + op_codes[op]
         print(result[::-1], file=fdw)
+    elif op in ["sw"]:
+        if (len(args) != 3):
+            raise ValueError(f"Line {i} : {op} takes 2 arguments")
+        rs2 = read_reg(args[1])
+        if (len(args[2].split('(')) != 2):
+            raise ValueError(f"Error in {op} : {args[2]} incorrect")
+        offset, presque_rs1 = args[2].split('(')
+        if presque_rs1[-1] != ')':
+            raise ValueError(f"Error in {op} : {args[2]} incorrect")
+        rs1 = read_reg(presque_rs1[:-1])
+        to_cut_offset = to_base_2(int(offset), 12)
+        result = to_cut_offset[:7] + to_base_2(rs2, 5) + to_base_2(rs1, 5) + "010" + to_cut_offset[7:] + op_codes[op]
+        print(result[::-1], file=fdw)
+    elif op in ["lw"]:
+        if (len(args) != 3):
+            raise ValueError(f"Line {i} : {op} takes 2 arguments")
+        rd = read_reg(args[1])
+        if (len(args[2].split('(')) != 2):
+            raise ValueError(f"Error in {op} : {args[2]} incorrect")
+        offset, presque_rs1 = args[2].split('(')
+        if presque_rs1[-1] != ')':
+            raise ValueError(f"Error in {op} : {args[2]} incorrect")
+        rs1 = read_reg(presque_rs1[:-1])
+        to_cut_offset = to_base_2(int(offset), 12)
+        result = to_cut_offset + to_base_2(rs1, 5) + "010" + to_base_2(rd, 5) + op_codes[op]
+        print(result[::-1], file=fdw)
     else:
         raise ValueError("Opération non existante")
         
