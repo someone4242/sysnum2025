@@ -1,5 +1,6 @@
 
 from lib_carotte import *
+from multiplie import *
 
 # (2**N_exp)-bit integers (signed or unsigned two-complement)
 
@@ -90,7 +91,7 @@ def nadder(N_exp, A, B, C0):
 # ALU
 
 def ALU(N_exp, A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp,
-        Sll_inp, Srl_inp):
+        Sll_inp, Srl_inp, Mul_inp):
     N = 2**N_exp
     nadder_A = A
     nadder_B = bus_unfold_def(N, lambda i : (B[i] ^ Sub_inp) | Not_inp)
@@ -99,6 +100,9 @@ def ALU(N_exp, A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp,
     nadder_S, nadder_C, nadder_XOR, nadder_AND = nadder(
             N_exp, nadder_A, nadder_B, nadder_X)
 
+    sll_S = ajouter_zeros_droite(A, B[:N_exp])
+    srl_S = ajouter_zeros_gauche(A, B[:N_exp])
+    mul_S = multiplie(A, B)
 
 
     arith_out = multi_And([~Xor_inp, ~And_inp, ~Or_inp, ~Not_inp])
@@ -107,8 +111,9 @@ def ALU(N_exp, A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp,
             And_inp & nadder_AND[i],
             (Xor_inp | Not_inp) & nadder_XOR[i],
             Or_inp & (nadder_AND[i] | nadder_XOR[i]),
-            Sll_inp & ajouter_zeros_droite(A, B[:N_exp]),
-            Srl_inp & ajouter_zeros_gauche(A, B[:N_exp])
+            Sll_inp & sll_S[i],
+            Srl_inp & srl_S[i],
+            Mul_inp & mul_S[i]
         ]))
 
 
