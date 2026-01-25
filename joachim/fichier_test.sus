@@ -9,3 +9,4 @@ feur:
     andi x23 x31 -4
     andi x23 x31 -5
     andi x23 x31 -6
+    or x31 x31 x31
