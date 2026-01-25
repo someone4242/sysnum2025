@@ -25,29 +25,30 @@ str_signal = [
     "01000000" + "010010", # xor  
     "01000000" + "110010", # xori 
     "10000000" + "010010", # sub  
-    "10000010" + "010010", # sll TO check
-    "10000010" + "110010", # slli TO check
-    "10000100" + "010010", # srl TO check
-    "10000100" + "110010", # srli TO check
-    "10000001" + "010010", # mul TO check
-    "10000000" + "010010", # jal TODO
+    "0" * 14, # dummy
+    "00000010" + "010010", # sll TO check
+    "00000010" + "110010", # slli TO check
+    "00000100" + "010010", # srl TO check
+    "00000100" + "110010", # srli TO check
+    "00000001" + "010010", # mul TO check
+    "00000000" + "010010", # jal TODO
     "10000000" + "010011", # beq 
     "10000000" + "010011", # bne 
     "10000000" + "010011", # blt 
     "10000000" + "010011", # bge 
-    "10000000" + "010010", # fadd TODO
-    "10000000" + "010010", # fsub TODO
-    "10000000" + "010010", # fmul TODO
-    "10000000" + "010010", # fdiv TODO
-    "10000000" + "010010", # ffisqrt TODO
-    "10000000" + "010010", # feq TODO
+    "00000000" + "010010", # fadd TODO
+    "00000000" + "010010", # fsub TODO
+    "00000000" + "010010", # fmul TODO
+    "00000000" + "010010", # fdiv TODO
+    "00000000" + "010010", # ffisqrt TODO
+    "00000000" + "010010", # feq TODO
     "00000000" + "010000", # load 
     "00000000" + "001000", # store 
     "00000000" + "000100", # jmp
     "00000000" + "000100"  # jz
 ]
 ctrl_signal = [Constant(str_signal[i]) if i < len(str_signal)
-                else Constant("0" * len(str_signal[0])) for i in range(32)]
+                else Constant("0" * len(str_signal[0])) for i in range(1 << opcode_len)]
 
 def mux_tree(opcode, nb_bits, data):
     tree = [zero for i in range(1 << (nb_bits + 1))]
@@ -89,7 +90,7 @@ def main():
     instr = ROM(pc_size, instr_size, pc)
     instr.set_as_output("instruction")
 
-    signal_tree = mux_tree(instr[1:7], opcode_len, ctrl_signal)
+    signal_tree = mux_tree(instr[1:1+opcode_len], opcode_len, ctrl_signal)
     sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, srl_alu, mul_alu, isrc, reg_write, mem_write, jmp, alu_sr, branch = signal_tree[1]
 
     imm_i = Concat(instr[20:32], Constant("0"*20))
