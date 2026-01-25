@@ -4,3 +4,4 @@ feur:
     addi x0 x0 13
 quoi:
     addi x0 x0 12
+    ffisqrt x1 x2

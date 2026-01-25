@@ -21,8 +21,8 @@ def to_base_2(a: int, size: int):
     return (size - len(res))*"1" + res
 
 rom_name = "instruction"
-file_write_name = "temp.txt"
 file_name = sys.argv[1]
+file_write_name = "default.txt"
 
 i = 1
 while i < len(sys.argv):
@@ -111,6 +111,35 @@ for i in range(len(instr)):
             raise ValueError(f"Label {dest_label} does not exist")
         to_cut_offset = to_base_2(labels[dest_label] - i, 12)
         result = to_cut_offset[:7] + to_base_2(rs2, 5) + to_base_2(rs1, 5) + three_bits[op] + to_cut_offset[7:] + op_codes[op]
+        print(result[::-1], file=fdw)
+    elif op in ["mul"]:
+        if (len(args) != 4):
+            raise ValueError(f"Line {i} : {op} takes 3 arguments")
+        rd = read_reg(args[1])
+        rs1 = read_reg(args[2])
+        rs2 = read_reg(args[3])
+        result = "0"*6 + "1" + to_base_2(rs2, 5) + to_base_2(rs1, 5) + three_bits[op] + to_base_2(rd, 5) + op_codes[op]
+        print(result[::-1], file=fdw)
+    elif op in ["fadd", "fmul", "fsub", "fdiv"]:
+        if (len(args) != 4):
+            raise ValueError(f"Line {i} : {op} takes 3 arguments")
+        rd = read_reg(args[1])
+        rs1 = read_reg(args[2])
+        rs2 = read_reg(args[3])
+        prefix_float = {
+            "fadd" : "0"*7,
+            "fsub" : "0"*4 + "100",
+            "fmul" : "0001000",
+            "fdiv" : "0001100"
+        }
+        result = prefix_float[op] + to_base_2(rs2, 5) + to_base_2(rs1, 5) + three_bits[op] + to_base_2(rd, 5) + op_codes[op]
+        print(result[::-1], file=fdw)
+    elif op in ["ffisqrt"]:
+        if (len(args) != 3):
+            raise ValueError(f"Line {i} : {op} takes 2 arguments")
+        rd = read_reg(args[1])
+        rs1 = read_reg(args[2])
+        result = "01011" + "0"*7 + to_base_2(rs1, 5) + three_bits[op] + to_base_2(rd, 5) + op_codes[op]
         print(result[::-1], file=fdw)
     else:
         raise ValueError("Opération non existante")
