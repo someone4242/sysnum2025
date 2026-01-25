@@ -1,0 +1,5 @@
+main:
+    addi x1 x0 80
+    addi x2 x0 4
+    srl x3 x1 x2 
+    srli x4 x1 1

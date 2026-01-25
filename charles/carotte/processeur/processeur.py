@@ -13,38 +13,38 @@ pc_incr = Constant("1" + ("0" * (pc_size - 1)))
 zero = false = Constant("0")
 val = [zero, one]
 
-# sub, xor, and, or, not, ISRC, RegWrite, MemWrite, jmp, ALU src, branch
+# sub, xor, and, or, not, sll, srl, mul, i_src, RegWrite, MemWrite, jmp, ALU src, branch
 
 str_signal = [
-    "00000" + "010010", # add  
-    "00000" + "110010", # addi 
-    "00100" + "010010", # and  
-    "00100" + "110010", # andi 
-    "00010" + "010010", # or   
-    "00010" + "110010", # ori  
-    "01000" + "010010", # xor  
-    "01000" + "110010", # xori 
-    "10000" + "010010", # sub  
-    "10000" + "010010", # sll TODO
-    "10000" + "010010", # slli TODO
-    "10000" + "010010", # srl TODO
-    "10000" + "010010", # srli TODO
-    "10000" + "010010", # mul TODO
-    "10000" + "010010", # jal TODO
-    "10000" + "010011", # beq 
-    "10000" + "010011", # bne 
-    "10000" + "010011", # blt 
-    "10000" + "010011", # bge 
-    "10000" + "010010", # fadd TODO
-    "10000" + "010010", # fsub TODO
-    "10000" + "010010", # fmul TODO
-    "10000" + "010010", # fdiv TODO
-    "10000" + "010010", # ffisqrt TODO
-    "10000" + "010010", # feq TODO
-    "00000" + "010000", # load 
-    "00000" + "001000", # store 
-    "00000" + "000100", # jmp
-    "00000" + "000100"  # jz
+    "00000000" + "010010", # add  
+    "00000000" + "110010", # addi 
+    "00100000" + "010010", # and  
+    "00100000" + "110010", # andi 
+    "00010000" + "010010", # or   
+    "00010000" + "110010", # ori  
+    "01000000" + "010010", # xor  
+    "01000000" + "110010", # xori 
+    "10000000" + "010010", # sub  
+    "10000010" + "010010", # sll TO check
+    "10000010" + "110010", # slli TO check
+    "10000100" + "010010", # srl TO check
+    "10000100" + "110010", # srli TO check
+    "10000001" + "010010", # mul TO check
+    "10000000" + "010010", # jal TODO
+    "10000000" + "010011", # beq 
+    "10000000" + "010011", # bne 
+    "10000000" + "010011", # blt 
+    "10000000" + "010011", # bge 
+    "10000000" + "010010", # fadd TODO
+    "10000000" + "010010", # fsub TODO
+    "10000000" + "010010", # fmul TODO
+    "10000000" + "010010", # fdiv TODO
+    "10000000" + "010010", # ffisqrt TODO
+    "10000000" + "010010", # feq TODO
+    "00000000" + "010000", # load 
+    "00000000" + "001000", # store 
+    "00000000" + "000100", # jmp
+    "00000000" + "000100"  # jz
 ]
 ctrl_signal = [Constant(str_signal[i]) if i < len(str_signal)
                 else Constant("0" * len(str_signal[0])) for i in range(32)]
@@ -90,10 +90,7 @@ def main():
     instr.set_as_output("instruction")
 
     signal_tree = mux_tree(instr[1:7], opcode_len, ctrl_signal)
-    sub_alu, xor_alu, and_alu, or_alu, not_alu, isrc, reg_write, mem_write, jmp, alu_sr, branch = signal_tree[1]
-    slr_alu = false 
-    sll_alu = false
-    mul_alu = false
+    sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, srl_alu, mul_alu, isrc, reg_write, mem_write, jmp, alu_sr, branch = signal_tree[1]
 
     imm_i = Concat(instr[20:32], Constant("0"*20))
     imm_s = Concat(instr[7:12], instr[25:32])[0:pc_size]
@@ -111,13 +108,16 @@ def main():
     and_alu.set_as_output("and")
     or_alu.set_as_output("or")
     not_alu.set_as_output("not")
+    sll_alu.set_as_output("sll")
+    srl_alu.set_as_output("srl")
+    mul_alu.set_as_output("mul")
     isrc.set_as_output("isrc")
     imm_i.set_as_output()
     A.set_as_output("A")
     B.set_as_output("B")
 
     write_enable = demux_tree(reg_dest, reg_desc_size, [reg_write])
-    ALU_res, C, V, N, Z = ALU(5, A, B, sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, slr_alu, mul_alu)
+    ALU_res, C, V, N, Z = ALU(5, A, B, sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, srl_alu, mul_alu)
     E, LT = Z, N 
     NE, GE = ~E, ~LT
 
