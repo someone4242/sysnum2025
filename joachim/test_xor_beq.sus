@@ -1,0 +1,11 @@
+main:
+    addi x1 x0 10
+    addi x2 x0 9
+    xor x3 x1 x2
+    beq x1 x2 feur
+    add x1 x0 x2
+    beq x1 x2 coubeh
+feur:
+    addi x2 x0 32
+coubeh:
+    addi x1 x0 42
