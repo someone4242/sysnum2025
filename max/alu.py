@@ -27,7 +27,12 @@ def multi_Or(var_list):
 
 def is_null(bus):
     if bus.bus_size == 1:
-        return ~bus
+        return ~bus[0]
+    elif bus.bus_size == 2:
+        return And(~bus[0], ~bus[1])
+    elif bus.bus_size == 3:
+        return And(~bus[0], And(~bus[1], ~bus[2]))
+ 
     n = bus.bus_size // 2
     return is_null(bus[:n]) & is_null(bus[n:])
 
