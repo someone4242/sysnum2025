@@ -5,3 +5,5 @@ feur:
 quoi:
     addi x0 x0 12
     ffisqrt x1 x2
+    sw x2 122(x1)
+    lw x2 122(x1)
