@@ -25,7 +25,12 @@ def multi_Or(var_list):
 
 def is_null(bus):
     if bus.bus_size == 1:
-        return ~bus
+        return ~bus[0]
+    elif bus.bus_size == 2:
+        return And(~bus[0], ~bus[1])
+    elif bus.bus_size == 3:
+        return And(~bus[0], And(~bus[1], ~bus[2]))
+ 
     n = bus.bus_size // 2
     return is_null(bus[:n]) & is_null(bus[n:])
 
@@ -36,7 +41,7 @@ def gen_prop_1_bit_adder(a, b, c):
 
 def nadder(N_exp, A, B, C0):
     N = 2**N_exp
-    assert A.bus_size == N and B.bus_size == N 
+    assert A.bus_size == N and B.bus_size == N
 
     def carry_lookahead(height, a, b, c):
         if height == 0:

@@ -1,9 +1,7 @@
 
 from lib_carotte import *
 
-N_exp = 5
-N = 2**N_exp
-# 32-bit integers (signed or unsigned two-complement)
+# (2**N_exp)-bit integers (signed or unsigned two-complement)
 
 # Utils
 
@@ -41,8 +39,8 @@ def is_null(bus):
 def gen_prop_1_bit_adder(a, b, c):
     return (a^b^c, a^b, a&b) # R, P, G
 
-def nadder(A, B, C0):
-
+def nadder(N_exp, A, B, C0):
+    N = 2**N_exp
     assert A.bus_size == N and B.bus_size == N
 
     def carry_lookahead(height, a, b, c):
@@ -65,13 +63,14 @@ def nadder(A, B, C0):
 
 # ALU
 
-def ALU(A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp):
+def ALU(N_exp, A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp):
+    N = 2**N_exp
     nadder_A = A
     nadder_B = bus_unfold_def(N, lambda i : (B[i] ^ Sub_inp) | Not_inp)
     nadder_X = Sub_inp
 
     nadder_S, nadder_C, nadder_XOR, nadder_AND = nadder(
-            nadder_A, nadder_B, nadder_X)
+            N_exp, nadder_A, nadder_B, nadder_X)
 
     arith_out = multi_And([~Xor_inp, ~And_inp, ~Or_inp, ~Not_inp])
     S = bus_unfold_def(N, lambda i : multi_Or([
@@ -90,6 +89,8 @@ def ALU(A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp):
 
 
 def main():
+    N_exp = 5
+    N = 2**N_exp
     A, B = Input(N, "A"), Input(N, "B")
     Sub_inp = Input(1, "Sub")
     Xor_inp = Input(1, "Xor")
@@ -98,7 +99,7 @@ def main():
     Not_inp = Input(1, "Not")
 
     S, C, flag_V, flag_N, flag_Z = ALU(
-            A, B,
+            N_exp, A, B,
             Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp)
 
     S.set_as_output("S")
