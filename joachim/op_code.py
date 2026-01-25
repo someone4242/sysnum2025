@@ -22,7 +22,8 @@ op_codes = {
     "fsub" : "1000100",
     "fmul" : "1001000",
     "fdiv" : "1001100",
-    "ffisqrt" : "1010000"
+    "ffisqrt" : "1010000",
+    "feq" : "1010100"
 }
 
 three_bits = {
