@@ -13,13 +13,18 @@ one_8 = Constant("1" + ("0" * 7))
 zero = false = Constant("0")
 val = [zero, one]
 
-# sub, xor, and, or, not, ISRC, Mem to Reg, MemWrite, jmp, ALU sr
+# sub, xor, and, or, not, ISRC, RegWrite, MemWrite, jmp, ALU sr
 
 str_signal = [
     "00000" + "00001", # add
-    "01000" + "00001", # xor
+    "00000" + "10001", # addi
     "00100" + "00001", # and 
+    "00100" + "10001", # andi
     "00010" + "00001", # or 
+    "00010" + "10001", # ori 
+    "01000" + "00001", # xor
+    "01000" + "10001", # xori
+
     "00000" + "10000", # addi 
     "00000" + "01000", # load 
     "00000" + "00100", # store 
