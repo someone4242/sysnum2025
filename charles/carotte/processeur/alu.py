@@ -102,7 +102,7 @@ def ALU(N_exp, A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp,
 
     sll_S = ajouter_zeros_droite(A, B[:N_exp])
     srl_S = ajouter_zeros_gauche(A, B[:N_exp])
-    mul_S = multiplie(A, B)
+    mul_S = A #multiplie(A, B)
 
 
     arith_out = multi_And([~Xor_inp, ~And_inp, ~Or_inp, ~Not_inp])

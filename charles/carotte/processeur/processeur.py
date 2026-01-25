@@ -52,12 +52,12 @@ ctrl_signal = [Constant(str_signal[i]) if i < len(str_signal)
 def mux_tree(opcode, nb_bits, data):
     tree = [zero for i in range(1 << (nb_bits + 1))]
     def build_tree(i, pos):
-        if pos == nb_bits:
+        if pos < 0:
             tree[i] = data[i - (1 << nb_bits)]
         else:
-            tree[i] = Mux(opcode[pos], build_tree(i*2, pos+1), build_tree(i*2+1, pos+1))
+            tree[i] = Mux(opcode[pos], build_tree(i*2, pos-1), build_tree(i*2+1, pos-1))
         return tree[i]
-    build_tree(1, 0)
+    build_tree(1, nb_bits-1)
     return tree
 
 def demux_tree(code, nb_bits, data):
@@ -72,6 +72,12 @@ def demux_tree(code, nb_bits, data):
             return build_tree(pos-1, next_layer)
     return build_tree(nb_bits-1, data)
 
+def concat(data):
+    if len(data) == 1:
+        return data[0]
+    mid = len(data)//2 
+    return Concat(concat(data[:mid]), concat(data[mid:]))
+
 def main():
     write_enable = 1
     stop = Input(1)
@@ -83,7 +89,7 @@ def main():
     instr = ROM(pc_size, instr_size, pc)
     instr.set_as_output("instruction")
 
-    signal_tree = mux_tree([instr[opcode_len - i] for i in range(opcode_len)], opcode_len, ctrl_signal)
+    signal_tree = mux_tree(instr[1:7], opcode_len, ctrl_signal)
     sub_alu, xor_alu, and_alu, or_alu, not_alu, isrc, reg_write, mem_write, jmp, alu_sr, branch = signal_tree[1]
     slr_alu = false 
     sll_alu = false
@@ -94,6 +100,8 @@ def main():
     reg_dest = instr[7:12]
     reg_src1 = instr[15:20]
     reg_src2 = instr[20:25]
+    reg_src1.set_as_output("rs1")
+    reg_src2.set_as_output("rs2")
     A = mux_tree(reg_src1, reg_desc_size, reg)[1]
     B = Mux(isrc, mux_tree(reg_src2, reg_desc_size, reg)[1], imm_i)
 
@@ -116,7 +124,7 @@ def main():
     ALU_res.set_as_output("ALU_result")
     mov_value = ALU_res
 
-    #condition = mux_tree([instr[2], instr[1]], 2, [NE, LT, GE, E])
+    #condition = mux_tree(instr[1:3], 2, [NE, LT, GE, E])
     condition = Mux(instr[2], Mux(instr[1], GE, E), Mux(instr[1], NE, LT))
     pc_offset = Mux(branch & condition, pc_incr, imm_s)
     next_pc, c, v, n, z = ALU(3, pc, pc_offset, false, false, false, false, false, false, false, false)
@@ -125,6 +133,8 @@ def main():
     pc.set_as_output("program_counter")
     for i in range(32):
         reg[i].set_as_output("x" + str(i))
-    for i in range(len(write_enable)):
-        write_enable[i].set_as_output("write_x" + str(i))
+    # for i in range(len(write_enable)):
+    #     write_enable[i].set_as_output("write_x" + str(i))
+    all_write = concat(write_enable)
+    all_write.set_as_output("write")
     reg_write.set_as_output("reg_write")
