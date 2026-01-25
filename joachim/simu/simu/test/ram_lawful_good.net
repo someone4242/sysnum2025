@@ -1,0 +1,5 @@
+INPUT read_addr, write_enable, write_addr, input_write_data
+OUTPUT o
+VAR read_addr:2, write_enable, write_addr:2, input_write_data:4, o:4
+IN
+o = RAM 2 4 read_addr write_enable write_addr input_write_data

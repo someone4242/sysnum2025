@@ -1,0 +1,7 @@
+INPUT read_addr
+OUTPUT o
+VAR read_addr:2, ram_1:4, ram_2:4, o:4 
+IN
+ram_1 = ROM 2 4 read_addr
+ram_2 = ROM 2 4 read_addr
+o = XOR ram_1 ram_2

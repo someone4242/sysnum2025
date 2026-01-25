@@ -1,0 +1,9 @@
+INPUT data_in
+OUTPUT result_out
+VAR data_in, x1, x2, x3, rem, result_out
+IN
+x1 = AND data_in data_in
+x2 = XOR x1 data_in
+rem = REG x2
+x3 = NOT rem
+result_out = OR x3 x3
