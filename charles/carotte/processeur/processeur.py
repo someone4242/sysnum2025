@@ -149,6 +149,7 @@ def main():
 
     for i in range(1, 9):
         reg[i].set_as_output("x" + str(i))
+    reg[30].set_as_output("x" + str(30))
     all_write = concat(write_enable)
     all_write.set_as_output("write")
     reg_write.set_as_output("reg_write")
