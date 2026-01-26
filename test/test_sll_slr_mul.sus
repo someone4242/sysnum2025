@@ -4,3 +4,4 @@ main:
     mul x5 x1 x2
     sll x3 x1 x2 
     srli x4 x1 1
+    0100110
