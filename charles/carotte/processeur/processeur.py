@@ -123,14 +123,13 @@ def main():
 
 
     # calcul de mov_value
-    mov_value = Mux(rdtime, Mux(mem_read, mem_value, Mux(jmp, ALU_res, Concat(pc_incr, Constant("0"*(reg_size - pc_size))))), clock)
+    mov_value = Mux(rdtime, Mux(mem_read, Mux(jmp, ALU_res, Concat(pc_incr, Constant("0"*(reg_size - pc_size)))), mem_value), clock)
     mov_to_reg = [Mux(write_enable[i], reg[i], mov_value) for i in range(reg_nb)]
 
 
     instr.set_as_output("instruction")
     reg_src1.set_as_output("rs1")
     reg_src2.set_as_output("rs2")
-    ALU_res.set_as_output("ALU_result")
     reg_dest.set_as_output("reg_dest")
     sub_alu.set_as_output("sub")
     xor_alu.set_as_output("xor")
@@ -144,6 +143,7 @@ def main():
     imm_i.set_as_output()
     A.set_as_output("A")
     B.set_as_output("B")
+    ALU_res.set_as_output("ALU_result")
 
     pc.set_as_output("program_counter")
 
@@ -168,3 +168,4 @@ def main():
     mov_value.set_as_output("mov_value")
     pc_incr.set_as_output("pc_incr")
     clock.set_as_output("clock")
+    rdtime.set_as_output("rdtime")
