@@ -1,4 +1,5 @@
 open Netlist_ast
+open Unix
 
 let print_only = ref false
 let number_steps = ref (-1)
@@ -47,8 +48,13 @@ let unpack_roms filename roms_specs =
 
   build_roms ()
 
+let begin_of_2026 = 
+  { tm_sec = 0; tm_min = 0; tm_hour = 0; tm_mday = 1;
+    tm_mon = 0; tm_year = 126; tm_wday = 0; tm_yday = 0;
+    tm_isdst = false }
+
 let simulator program number_steps =
-  let begin_time = Unix.time () in 
+  let begin_time = fst (Unix.mktime begin_of_2026) in 
   (*Initialisation of the environment*)
   let env = ref Env.empty in
   List.iter (fun (k, t) -> match t with

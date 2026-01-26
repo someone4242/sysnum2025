@@ -1,5 +1,8 @@
 from lib_carotte import *
 from alu import *
+from convert import *
+from fadder_et_fmultiplie import *
+from fast_inverse_square_root import *
 
 ram_addr_size = 8
 ram_size = 2**ram_addr_size
@@ -27,19 +30,19 @@ str_signal = [
     "01000000" + "0100000", # xor  
     "01000000" + "1100000", # xori 
     "10000000" + "0100000", # sub  
-    "00000000" + "0010000", # sw TO check
+    "00000000" + "0010000", # sw 
     "00000010" + "0100000", # sll
     "00000010" + "1100000", # slli
     "00000100" + "0100000", # srl
     "00000100" + "1100000", # srli
     "00000001" + "0100000", # mul 
-    "00000000" + "0100100", # lw TO check
-    "00000000" + "0101000", # jal TO check
+    "00000000" + "0100100", # lw 
+    "00000000" + "0101000", # jal 
     "10000000" + "0000010", # beq 
     "10000000" + "0000010", # bne 
     "10000000" + "0000010", # blt 
     "10000000" + "0000010", # bge 
-    "00000000" + "0100001", # rdtime TO check
+    "00000000" + "0100001", # rdtime
     "00000000" + "0000000", # fadd TODO
     "00000000" + "0000000", # fsub TODO
     "00000000" + "0000000", # fmul TODO
@@ -93,7 +96,7 @@ def main():
 
     # lecture de l'instruction et préparation des signaux
     instr = ROM(pc_size, instr_size, pc)
-    signal_tree = mux_tree(instr[1:1+opcode_len], opcode_len, ctrl_signal)
+    signal_tree = mux_tree(instr[0:opcode_len], opcode_len, ctrl_signal)
     sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, srl_alu, mul_alu, isrc, reg_write, mem_write, jmp, mem_read, branch, rdtime = signal_tree[1]
     imm_i = sign_extend(instr[20:32], word_size)
     imm_s = Concat(instr[7:12], instr[25:32])[0:pc_size]
@@ -120,7 +123,7 @@ def main():
     #calcul du program counter
     #condition = mux_tree(instr[1:3], 2, [NE, LT, GE, E])
     pc_incr, c, v, n, z = ALU(3, pc, one_8bit, false, false, false, false, false, false, false, false)
-    condition = Mux(instr[2], Mux(instr[1], GE, E), Mux(instr[1], NE, LT))
+    condition = Mux(instr[1], Mux(instr[0], GE, E), Mux(instr[0], NE, LT))
     pc_offset = Mux(branch & condition, Mux(jmp, one_8bit, jmp_offset), imm_s)
     next_pc, c, v, n, z = ALU(3, pc, pc_offset, false, false, false, false, false, false, false, false)
 
