@@ -176,7 +176,11 @@ for i in range(len(instr)):
         result = to_cut_offset + to_base_2(rs1, 5) + "010" + to_base_2(rd, 5) + op_codes[op]
         print(result[::-1], file=fdw)
     elif op in ["rdtime"]:
-        raise ValueError("TODO rdtime")
+        if (len(args) != 2):
+            raise ValueError(f"Line {i} : {op} takes 1 arguments")
+        rd = read_reg(args[1])
+        result = "0"*20 + to_base_2(rd, 5) + op_codes[op]
+        print(result[::-1], file=fdw)
     else:
         raise ValueError("Opération non existante")
         
