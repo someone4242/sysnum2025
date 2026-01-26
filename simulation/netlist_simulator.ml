@@ -7,7 +7,6 @@ let rom_file_name = ref ""
 exception SimulationError
 exception RomConfigurationError of string
 
-
 let unpack_roms filename roms_specs = 
   let ic = Netlist.find_file filename in
 
@@ -49,6 +48,7 @@ let unpack_roms filename roms_specs =
   build_roms ()
 
 let simulator program number_steps =
+  let begin_time = Unix.time () in 
   (*Initialisation of the environment*)
   let env = ref Env.empty in
   List.iter (fun (k, t) -> match t with
@@ -83,24 +83,35 @@ let simulator program number_steps =
 
   (*Function to parse the input given by the user*)
   let parse_input id =
-    let is_correct_parsing ip =
-      let char_lst = String.fold_right (fun c acc -> c::acc) ip [] in
-      if (List.exists (fun x -> (x <> '0' && x <> '1')) char_lst) then None
-      else match (Env.find id program.p_vars) with
-        | TBit when String.length ip = 1 -> Some (VBit (ip.[0] = '1'))
-        | TBitArray n when n = String.length ip -> 
-          Some (VBitArray (Array.init n (fun i -> ip.[i] = '1')))
-        | _ -> None in
-    Printf.printf "%s = " id;
-    let user_input = ref (read_line ()) in
-    let call = ref (is_correct_parsing !user_input) in
-    while (!call = None) do
-      Printf.printf "Incorrect input :( I am very sad :( :( :(\n%s = " id;
-      user_input := read_line ();
-      call := is_correct_parsing !user_input
-    done;
-    (*Printf.printf "\n";*)
-    env := Env.add id (Option.get !call) (!env) in
+    if id = "clock" then begin
+      let clock = ref (Float.to_int ((Unix.time ()) -. begin_time)) in 
+      let arr = Array.make 32 false in 
+      for i = 0 to 31 do 
+        ignore(arr.(i) = ((!clock mod 2) = 1));
+        clock := !clock / 2
+      done;
+      env := Env.add id (VBitArray arr) (!env)
+    end
+    else begin 
+      let is_correct_parsing ip =
+        let char_lst = String.fold_right (fun c acc -> c::acc) ip [] in
+        if (List.exists (fun x -> (x <> '0' && x <> '1')) char_lst) then None
+        else match (Env.find id program.p_vars) with
+          | TBit when String.length ip = 1 -> Some (VBit (ip.[0] = '1'))
+          | TBitArray n when n = String.length ip -> 
+            Some (VBitArray (Array.init n (fun i -> ip.[i] = '1')))
+          | _ -> None in
+      Printf.printf "%s = " id;
+      let user_input = ref (read_line ()) in
+      let call = ref (is_correct_parsing !user_input) in
+      while (!call = None) do
+        Printf.printf "Incorrect input :( I am very sad :( :( :(\n%s = " id;
+        user_input := read_line ();
+        call := is_correct_parsing !user_input
+      done;
+      (*Printf.printf "\n";*)
+      env := Env.add id (Option.get !call) (!env)
+    end in
   (*---------------------------------------------*)
 
   (*Function to print the outputs*)

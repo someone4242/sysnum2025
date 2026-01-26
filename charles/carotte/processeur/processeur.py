@@ -15,39 +15,37 @@ one_8bit = Constant("1" + ("0" * (pc_size - 1)))
 zero = false = Constant("0")
 val = [zero, one]
 
-# sub, xor, and, or, not, sll, srl, mul, i_src, RegWrite, MemWrite, jmp, MemRead, branch
+# sub, xor, and, or, not, sll, srl, mul, i_src, RegWrite, MemWrite, jmp, MemRead, branch, rdtime
 
 str_signal = [
-    "00000000" + "010000", # add  
-    "00000000" + "110000", # addi 
-    "00100000" + "010000", # and  
-    "00100000" + "110000", # andi 
-    "00010000" + "010000", # or   
-    "00010000" + "110000", # ori  
-    "01000000" + "010000", # xor  
-    "01000000" + "110000", # xori 
-    "10000000" + "010000", # sub  
-    "00000000" + "001000", # sw TO check
-    "00000010" + "010000", # sll
-    "00000010" + "110000", # slli
-    "00000100" + "010000", # srl
-    "00000100" + "110000", # srli
-    "00000001" + "010000", # mul 
-    "00000000" + "010010", # lw TO check
-    "00000000" + "010100", # jal TO check
-    "10000000" + "010001", # beq 
-    "10000000" + "010001", # bne 
-    "10000000" + "010001", # blt 
-    "10000000" + "010001", # bge 
-    "00000000" + "010010", # rdtime TODO
-    "00000000" + "010000", # fadd TODO
-    "00000000" + "010000", # fsub TODO
-    "00000000" + "010000", # fmul TODO
-    "00000000" + "010000", # fdiv TODO
-    "00000000" + "010000", # ffisqrt TODO
-    "00000000" + "010000", # feq TODO
-    "00000000" + "000100", # jmp
-    "00000000" + "000100"  # jz
+    "00000000" + "0100000", # add  
+    "00000000" + "1100000", # addi 
+    "00100000" + "0100000", # and  
+    "00100000" + "1100000", # andi 
+    "00010000" + "0100000", # or   
+    "00010000" + "1100000", # ori  
+    "01000000" + "0100000", # xor  
+    "01000000" + "1100000", # xori 
+    "10000000" + "0100000", # sub  
+    "00000000" + "0010000", # sw TO check
+    "00000010" + "0100000", # sll
+    "00000010" + "1100000", # slli
+    "00000100" + "0100000", # srl
+    "00000100" + "1100000", # srli
+    "00000001" + "0100000", # mul 
+    "00000000" + "0100100", # lw TO check
+    "00000000" + "0101000", # jal TO check
+    "10000000" + "0100010", # beq 
+    "10000000" + "0100010", # bne 
+    "10000000" + "0100010", # blt 
+    "10000000" + "0100010", # bge 
+    "00000000" + "0100001", # rdtime TO check
+    "00000000" + "0100000", # fadd TODO
+    "00000000" + "0100000", # fsub TODO
+    "00000000" + "0100000", # fmul TODO
+    "00000000" + "0100000", # fdiv TODO
+    "00000000" + "0100000", # ffisqrt TODO
+    "00000000" + "0100000", # feq TODO
 ]
 ctrl_signal = [Constant(str_signal[i]) if i < len(str_signal)
                 else Constant("0" * len(str_signal[0])) for i in range(1 << opcode_len)]
@@ -83,6 +81,7 @@ def concat(data):
 
 def main():
     write_enable = 1
+    clock = Input(32)
     stop = Input(1)
     #RAM(addr_size, word_size, read_addr, write_enable, write_addr, write_data)
     pc = RAM(1, pc_size, zero, one, zero, Defer(pc_size, lambda: next_pc)) # program counter
@@ -92,7 +91,7 @@ def main():
     # lecture de l'instruction et préparation des signaux
     instr = ROM(pc_size, instr_size, pc)
     signal_tree = mux_tree(instr[1:1+opcode_len], opcode_len, ctrl_signal)
-    sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, srl_alu, mul_alu, isrc, reg_write, mem_write, jmp, mem_read, branch = signal_tree[1]
+    sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, srl_alu, mul_alu, isrc, reg_write, mem_write, jmp, mem_read, branch, rdtime = signal_tree[1]
     imm_i = Concat(instr[20:32], Constant("0"*20))
     imm_s = Concat(instr[7:12], instr[25:32])[0:pc_size]
     reg_dest = instr[7:12]
@@ -124,7 +123,7 @@ def main():
 
 
     # calcul de mov_value
-    mov_value = Mux(mem_read, mem_value, Mux(jmp, ALU_res, Concat(pc_incr, Constant("0"*(reg_size - pc_size)))))
+    mov_value = Mux(rdtime, Mux(mem_read, mem_value, Mux(jmp, ALU_res, Concat(pc_incr, Constant("0"*(reg_size - pc_size))))), clock)
     mov_to_reg = [Mux(write_enable[i], reg[i], mov_value) for i in range(reg_nb)]
 
 
@@ -167,3 +166,4 @@ def main():
     next_pc.set_as_output("next_program_counter")
     mov_value.set_as_output("mov_value")
     pc_incr.set_as_output("pc_incr")
+    clock.set_as_output("clock")
