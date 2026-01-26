@@ -61,7 +61,7 @@ correct_d:
     blt x31 x22 correct_h
     sub x31 x31 x22
     addi x5 x5 1
-    jal x0 jan0
+    jal x0 correct_d
 correct_h:
     blt x31 x21 correct_m
     sub x31 x31 x21
@@ -79,52 +79,52 @@ correct_s:
 jan0:
     addi x11 x5 -1
     addi x8 x0 1
-    blt x11 x24 correct_d
+    blt x11 x24 main
     sub x11 x11 x24
 feb0:
     addi x8 x8 1
     add x12 x26 x7
-    blt x11 x12 correct_d
+    blt x11 x12 main
     sub x11 x11 x12
 mar0:
     addi x8 x8 1
-    blt x11 x24 correct_d
+    blt x11 x24 main
     sub x11 x11 x24
 apr0:
     addi x8 x8 1
-    blt x11 x25 correct_d
+    blt x11 x25 main
     sub x11 x11 x25
 may0:
     addi x8 x8 1
-    blt x11 x24 correct_d
+    blt x11 x24 main
     sub x11 x11 x24
 jun0:
     addi x8 x8 1
-    blt x11 x25 correct_d
+    blt x11 x25 main
     sub x11 x11 x25
 jul0:
     addi x8 x8 1
-    blt x11 x24 correct_d
+    blt x11 x24 main
     sub x11 x11 x24
 aug0:
     addi x8 x8 1
-    blt x11 x24 correct_d
+    blt x11 x24 main
     sub x11 x11 x24
 sep0:
     addi x8 x8 1
-    blt x11 x25 correct_d
+    blt x11 x25 main
     sub x11 x11 x25
 oct0:
     addi x8 x8 1
-    blt x11 x24 correct_d
+    blt x11 x24 main
     sub x11 x11 x24
 nov0:
     addi x8 x8 1
-    blt x11 x25 correct_d
+    blt x11 x25 main
     sub x11 x11 x25
 dec0:
     addi x8 x8 1
-    jal x0 correct_d
+    jal x0 main
 
 
 
