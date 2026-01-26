@@ -87,7 +87,7 @@ let simulator program number_steps =
       let clock = ref (Float.to_int ((Unix.time ()) -. begin_time)) in 
       let arr = Array.make 32 false in 
       for i = 0 to 31 do 
-        ignore(arr.(i) = ((!clock mod 2) = 1));
+        arr.(i) <- ((!clock mod 2) = 1);
         clock := !clock / 2
       done;
       env := Env.add id (VBitArray arr) (!env)
