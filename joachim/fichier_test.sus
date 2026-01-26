@@ -1,9 +1,5 @@
-feur:
-    addi x0 x0 16
-    beq x0 x0 quoi
-    addi x0 x0 13
-quoi:
-    addi x0 x0 12
-    ffisqrt x1 x2
-    sw x2 122(x1)
-    lw x2 122(x1)
+main:
+    addi x1 x0 10
+    addi x2 x0 1
+    sll x3 x1 x2
+    srli x4 x1 1

@@ -1,5 +1,6 @@
 
 from lib_carotte import *
+from multiplie import *
 
 # (2**N_exp)-bit integers (signed or unsigned two-complement)
 
@@ -101,10 +102,13 @@ def ALU(N_exp, A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp,
 
     sll_S = ajouter_zeros_droite(A, B[:N_exp])
     srl_S = ajouter_zeros_gauche(A, B[:N_exp])
-    mul_S = multiplie(A, B)
+    mul_S = multiplie(A, B)[:N]
 
 
-    arith_out = multi_And([~Xor_inp, ~And_inp, ~Or_inp, ~Not_inp])
+    arith_out = multi_And([~Xor_inp, ~And_inp, ~Or_inp, ~Not_inp,
+                           ~Sll_inp, ~Srl_inp, ~Mul_inp])
+
+
     S = bus_unfold_def(N, lambda i : multi_Or([
             arith_out & nadder_S[i],
             And_inp & nadder_AND[i],
@@ -126,23 +130,20 @@ def ALU(N_exp, A, B, Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp,
 
 """
 def main():
-    N_exp = 5
+    N_exp = 2
     N = 2**N_exp
     A, B = Input(N, "A"), Input(N, "B")
-    Sub_inp = Input(1, "Sub")
-    Xor_inp = Input(1, "Xor")
-    And_inp = Input(1, "And")
-    Or_inp = Input(1, "Or")
-    Not_inp = Input(1, "Not")
+
+    c0 = Constant("0")
+    sll = Input(1, "Sll")
+    srl = Input(1, "Srl")
+    mul = Input(1, "Mul")
 
     S, C, flag_V, flag_N, flag_Z = ALU(
             N_exp, A, B,
-            Sub_inp, Xor_inp, And_inp, Or_inp, Not_inp)
+            c0, c0, c0, c0, c0,
+            sll, srl, mul)
 
     S.set_as_output("S")
-    C.set_as_output("C")
-    flag_V.set_as_output("V")
-    flag_N.set_as_output("N")
-    flag_Z.set_as_output("Z")
 """
 
