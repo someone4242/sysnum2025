@@ -99,7 +99,7 @@ def main():
     reg_dest = instr[7:12]
     reg_src1 = instr[15:20]
     reg_src2 = instr[20:25]
-    jmp_offset = instr[20:20+pc_size]
+    jmp_offset = instr[12:12+pc_size]
     reg_src1.set_as_output("rs1")
     reg_src2.set_as_output("rs2")
     A = mux_tree(reg_src1, reg_desc_size, reg)[1]
