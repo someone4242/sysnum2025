@@ -84,7 +84,7 @@ for i in range(len(instr)):
         rs2 = read_reg(args[3])
         result = "01" + "0"*5 + to_base_2(rs2, 5) + to_base_2(rs1, 5) + "0"*3 + to_base_2(rd, 5) + op_codes[op]
         print(result[::-1], file=fdw)
-    elif op in ["slli", "slri"]:
+    elif op in ["slli", "srli"]:
         if (len(args) != 4):
             raise ValueError(f"Line {i} : {op} takes 3 arguments")
         rd = read_reg(args[1])
@@ -175,6 +175,8 @@ for i in range(len(instr)):
         to_cut_offset = to_base_2(int(offset), 12)
         result = to_cut_offset + to_base_2(rs1, 5) + "010" + to_base_2(rd, 5) + op_codes[op]
         print(result[::-1], file=fdw)
+    elif op in ["rdtime"]:
+        raise ValueError("TODO rdtime")
     else:
         raise ValueError("Opération non existante")
         
