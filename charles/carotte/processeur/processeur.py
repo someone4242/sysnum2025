@@ -9,7 +9,7 @@ reg_nb = 32
 instr_size = 32
 word_size = 32
 one = true = Constant("1")
-pc_incr = Constant("1" + ("0" * (pc_size - 1)))
+one_8bit = Constant("1" + ("0" * (pc_size - 1)))
 zero = false = Constant("0")
 val = [zero, one]
 
@@ -31,7 +31,8 @@ str_signal = [
     "00000100" + "010010", # srl TO check
     "00000100" + "110010", # srli TO check
     "00000001" + "010010", # mul TO check
-    "00000000" + "010010", # jal TODO
+    "0" * 14, # dummy
+    "00000000" + "010110", # jal TO check
     "10000000" + "010011", # beq 
     "10000000" + "010011", # bne 
     "10000000" + "010011", # blt 
@@ -98,6 +99,7 @@ def main():
     reg_dest = instr[7:12]
     reg_src1 = instr[15:20]
     reg_src2 = instr[20:25]
+    jmp_offset = instr[20:20+pc_size]
     reg_src1.set_as_output("rs1")
     reg_src2.set_as_output("rs2")
     A = mux_tree(reg_src1, reg_desc_size, reg)[1]
@@ -123,11 +125,12 @@ def main():
     NE, GE = ~E, ~LT
 
     ALU_res.set_as_output("ALU_result")
-    mov_value = ALU_res
+    pc_incr, c, v, n, z = ALU(3, pc, one_8bit, false, false, false, false, false, false, false, false)
+    mov_value = Mux(jmp, ALU_res, Concat(pc_incr, Constant("0"*(reg_size - pc_size))))
 
     #condition = mux_tree(instr[1:3], 2, [NE, LT, GE, E])
     condition = Mux(instr[2], Mux(instr[1], GE, E), Mux(instr[1], NE, LT))
-    pc_offset = Mux(branch & condition, pc_incr, imm_s)
+    pc_offset = Mux(branch & condition, Mux(jmp, one_8bit, jmp_offset), imm_s)
     next_pc, c, v, n, z = ALU(3, pc, pc_offset, false, false, false, false, false, false, false, false)
     mov_to_reg = [Mux(write_enable[i], reg[i], mov_value) for i in range(32)]
 
@@ -149,3 +152,6 @@ def main():
     pc_offset.set_as_output("pc_offset")
     pc.set_as_output("program_counter")
     next_pc.set_as_output("next_program_counter")
+    mov_value.set_as_output("mov_value")
+    jmp.set_as_output("jmp")
+    pc_incr.set_as_output("pc_incr")
