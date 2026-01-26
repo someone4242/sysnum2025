@@ -24,16 +24,16 @@ def inverse_bits(a: Variable) -> Variable:
     return r
 
 def fround_down(a: Variable) -> Variable:
-    assert a.bus_size == 16
+    assert a.bus_size == 32
     signe,exposant,mantisse = encodedecode.fdecode(a)
-    mantisse = mantisse + Constant("0"*(32-mantisse.bus_size+10))
+    mantisse = mantisse + Constant("0"*(32-mantisse.bus_size+23))
     biais = encodedecode.biais()+Constant("0"*(exposant.bus_size-encodedecode.biais().bus_size))
     exposant_positif = comparer.plus_grand_large(exposant,biais)
 
     entier = Mux(exposant_positif,
                  bitshift.ajouter_zeros_droite(mantisse, adder(biais,inverse_bits(exposant),Constant("1"))[0]),
                  bitshift.ajouter_zeros_gauche(mantisse, adder(exposant,inverse_bits(biais),Constant("1"))[0]))
-    entier = entier[10:]
+    entier = entier[23:]
     entier = Mux(signe, entier, adder(inverse_bits(entier),Constant("0"*entier.bus_size),Constant("0"))[0]) # Si négatif, on ajoute 0 car round(-3.5) = -4
     return entier
 
@@ -41,25 +41,25 @@ def fround_up(a: Variable) -> Variable:
     return adder(round_down(a),Constant("0"*32),Constant("1"))[0]
 
 def fround_nearest_to_even(a: Variable) -> Variable:
-    assert a.bus_size == 16
+    assert a.bus_size == 32
     signe,exposant,mantisse = encodedecode.fdecode(a)
-    mantisse = mantisse + Constant("0"*(32-mantisse.bus_size+10))
+    mantisse = mantisse + Constant("0"*(32-mantisse.bus_size+23))
     biais = encodedecode.biais()+Constant("0"*(exposant.bus_size-encodedecode.biais().bus_size))
     exposant_positif = comparer.plus_grand_large(exposant,biais)
 
     entier = Mux(exposant_positif,
                  bitshift.ajouter_zeros_droite(mantisse, adder(biais,inverse_bits(exposant),Constant("1"))[0]),
                  bitshift.ajouter_zeros_gauche(mantisse, adder(exposant,inverse_bits(biais),Constant("1"))[0]))
-    condition_aller_superieur = entier[9] & ((entier[10] & comparer.fegal_zero(entier[:10])) | ~comparer.fegal_zero(entier[:10]))
+    condition_aller_superieur = entier[22] & ((entier[23] & comparer.fegal_zero(entier[:23])) | ~comparer.fegal_zero(entier[:23]))
     #return entier[:10],entier[10:]
-    entier = entier[10:]
+    entier = entier[23:]
     entier = Mux(signe, entier, adder(inverse_bits(entier),Constant("0"*entier.bus_size),Constant("0"))[0]) # Si négatif, on ajoute 0 car round(-3.5) = -4
     return Mux(condition_aller_superieur, entier, adder(entier,Constant("0"*32),Constant("1"))[0])
 
 
 
 def main() -> None:
-    n = 16
+    n = 32
     a = Input(n)
     r = round_nearest_to_even(a)
     r.set_as_output("z")

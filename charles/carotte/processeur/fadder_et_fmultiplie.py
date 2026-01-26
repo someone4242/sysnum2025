@@ -65,11 +65,11 @@ def fadd(a: Variable, b: Variable) -> Variable:
     return Mux(condition, fadd_temp(b,a), fadd_temp(a,b))
 
 def retire_zeros_gauche(mantisse: Variable, exposant: Variable) -> typing.Tuple[Variable, Variable]:
-    exposant = adder(exposant,Constant("0"*exposant.bus_size),mantisse[21])[0]
-    doit_sarreter = comparer.fegal_zero(mantisse[10:])
+    exposant = adder(exposant,Constant("0"*exposant.bus_size),mantisse[47])[0]
+    doit_sarreter = comparer.fegal_zero(mantisse[23:])
     for i in range(mantisse.bus_size):
         mantisse = Mux(doit_sarreter, mantisse[1:]+Constant("0"), mantisse)
-        doit_sarreter = doit_sarreter | comparer.fegal_zero(mantisse[10:])
+        doit_sarreter = doit_sarreter | comparer.fegal_zero(mantisse[23:])
     return mantisse,exposant
 
 
@@ -132,7 +132,7 @@ def fdivise(a: Variable, b: Variable) -> Variable:
     return Mux(a_est_nan | b_est_nan | comparer.fegal_zero(b), encodedecode.fencode(new_signe,new_exposant,new_mantisse), encodedecode.nan())
 
 def main() -> None:
-    n = 16
+    n = 32
     a = Input(n)
     b = Input(n)
     #r = fmultiplie(a,b)

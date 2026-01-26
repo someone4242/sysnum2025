@@ -1,6 +1,7 @@
 from lib_carotte import *
 from alu import *
 from convert import *
+from comparer import *
 from fadder_et_fmultiplie import *
 from fast_inverse_square_root import *
 
@@ -14,41 +15,44 @@ reg_nb = 32
 instr_size = 32
 word_size = 32
 one = true = Constant("1")
-one_8bit = Constant("1" + ("0" * (pc_size - 1)))
 zero = false = Constant("0")
 val = [zero, one]
 
-# sub, xor, and, or, not, sll, srl, mul, i_src, RegWrite, MemWrite, jmp, MemRead, branch, rdtime
+zero_32bit = Constant("0" * word_size)
+one_8bit = Constant("1" + ("0" * (pc_size - 1)))
+one_32bit = Constant("1" + ("0" * (word_size - 1)))
+
+# floats, div/isqrt, sub, xor, and, or, not, sll, srl, mul, i_src, RegWrite, MemWrite, jmp, MemRead, compare, rdtime
 
 str_signal = [
-    "00000000" + "0100000", # add  
-    "00000000" + "1100000", # addi 
-    "00100000" + "0100000", # and  
-    "00100000" + "1100000", # andi 
-    "00010000" + "0100000", # or   
-    "00010000" + "1100000", # ori  
-    "01000000" + "0100000", # xor  
-    "01000000" + "1100000", # xori 
-    "10000000" + "0100000", # sub  
-    "00000000" + "0010000", # sw 
-    "00000010" + "0100000", # sll
-    "00000010" + "1100000", # slli
-    "00000100" + "0100000", # srl
-    "00000100" + "1100000", # srli
-    "00000001" + "0100000", # mul 
-    "00000000" + "0100100", # lw 
-    "00000000" + "0101000", # jal 
-    "10000000" + "0000010", # beq 
-    "10000000" + "0000010", # bne 
-    "10000000" + "0000010", # blt 
-    "10000000" + "0000010", # bge 
-    "00000000" + "0100001", # rdtime
-    "00000000" + "0000000", # fadd TODO
-    "00000000" + "0000000", # fsub TODO
-    "00000000" + "0000000", # fmul TODO
-    "00000000" + "0000000", # fdiv TODO
-    "00000000" + "0000000", # ffisqrt TODO
-    "00000000" + "0000000", # feq TODO
+    "00" + "00000000" + "0100000", # add  
+    "00" + "00000000" + "1100000", # addi 
+    "00" + "00100000" + "0100000", # and  
+    "00" + "00100000" + "1100000", # andi 
+    "00" + "00010000" + "0100000", # or   
+    "00" + "00010000" + "1100000", # ori  
+    "00" + "01000000" + "0100000", # xor  
+    "00" + "01000000" + "1100000", # xori 
+    "00" + "10000000" + "0100000", # sub  
+    "00" + "00000000" + "0010000", # sw 
+    "00" + "00000010" + "0100000", # sll
+    "00" + "00000010" + "1100000", # slli
+    "00" + "00000100" + "0100000", # srl
+    "00" + "00000100" + "1100000", # srli
+    "00" + "00000001" + "0100000", # mul 
+    "00" + "00000000" + "0100100", # lw 
+    "00" + "00000000" + "0101000", # jal 
+    "00" + "10000000" + "0000010", # beq 
+    "00" + "10000000" + "0000010", # bne 
+    "00" + "10000000" + "0000010", # blt 
+    "00" + "10000000" + "0000010", # bge 
+    "00" + "00000000" + "0100001", # rdtime
+    "10" + "00000000" + "0000000", # fadd TODO
+    "10" + "00000000" + "0000000", # fsub TODO
+    "10" + "00000000" + "0000000", # fmul TODO
+    "11" + "00000000" + "0000000", # fdiv TODO
+    "11" + "00000000" + "0000000", # ffisqrt TODO
+    "10" + "00000000" + "0000010", # feq TODO
 ]
 ctrl_signal = [Constant(str_signal[i]) if i < len(str_signal)
                 else Constant("0" * len(str_signal[0])) for i in range(1 << opcode_len)]
@@ -80,14 +84,25 @@ def concat(data):
     if len(data) == 1:
         return data[0]
     mid = len(data)//2 
-    return Concat(concat(data[:mid]), concat(data[mid:]))
+    return concat(data[:mid]) + concat(data[mid:])
 
 def sign_extend(data, length):
     return concat([data] + ([data[len(data)-1]] * (length - len(data))))
 
+def float_operation(A, B, eq, sub, mul, div, isqrt):
+    B_opp = B[:(word_size - 1)] + ~B[word_size - 1]
+    B_true = bus_unfold_def(word_size, lambda i : Mux(sub, B[i], B_opp[i]))
+
+    A_op_B = fadd(A, B)
+    A_eq_B = fegal(A, B) + Constant("0" * (word_size - 1))
+    AB = fmultiplie(A, B)
+    A_div_B = fdivise(A, B)
+    isqrtA = fast_inverse_square_root(A)
+    return Mux(~eq, A_eq_B, Mux(~mul, AB, Mux(~div, A_div_B, Mux(~isqrt, isqrtA, A_op_B))))
+
 def main():
     write_enable = 1
-    clock = Input(32)
+    clock = Input(word_size)
     #stop = Input(1)
     #RAM(addr_size, word_size, read_addr, write_enable, write_addr, write_data)
     pc = RAM(1, pc_size, zero, one, zero, Defer(pc_size, lambda: next_pc)) # program counter
@@ -97,9 +112,9 @@ def main():
     # lecture de l'instruction et préparation des signaux
     instr = ROM(pc_size, instr_size, pc)
     signal_tree = mux_tree(instr[0:opcode_len], opcode_len, ctrl_signal)
-    sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, srl_alu, mul_alu, isrc, reg_write, mem_write, jmp, mem_read, branch, rdtime = signal_tree[1]
+    is_float, float_opcode, sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, srl_alu, mul_alu, isrc, reg_write, mem_write, jmp, mem_read, compare, rdtime = signal_tree[1]
     imm_i = sign_extend(instr[20:32], word_size)
-    imm_s = Concat(instr[7:12], instr[25:32])[0:pc_size]
+    imm_s = (instr[7:12] + instr[25:32])[0:pc_size]
     reg_dest = instr[7:12]
     reg_src1 = instr[15:20]
     reg_src2 = instr[20:25]
@@ -115,6 +130,9 @@ def main():
     mem_value = RAM(ram_addr_size, word_size, mem_addr[0:8], mem_write, mem_addr[0:8], rs2_value)
 
     # calcul du résultat de l'ALU et des flags
+    float_div = Mux(float_opcode, false, instr[0])
+    float_isqrt = Mux(float_opcode, false, instr[1])
+    float_res = zero_32bit#float_operation(A, B, compare, sub_alu, mul_alu, float_div, float_isqrt)
     write_enable = demux_tree(reg_dest, reg_desc_size, [reg_write])
     ALU_res, C, V, N, Z = ALU(5, A, B, sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, srl_alu, mul_alu)
     E, LT = Z, N 
@@ -122,6 +140,7 @@ def main():
 
     #calcul du program counter
     #condition = mux_tree(instr[1:3], 2, [NE, LT, GE, E])
+    branch = compare & (~is_float)
     pc_incr, c, v, n, z = ALU(3, pc, one_8bit, false, false, false, false, false, false, false, false)
     condition = Mux(instr[1], Mux(instr[0], GE, E), Mux(instr[0], NE, LT))
     pc_offset = Mux(branch & condition, Mux(jmp, one_8bit, jmp_offset), imm_s)
@@ -129,7 +148,8 @@ def main():
 
 
     # calcul de mov_value
-    mov_value = Mux(rdtime, Mux(mem_read, Mux(jmp, ALU_res, sign_extend(pc_incr, reg_size)), mem_value), clock)
+    computed_val = Mux(jmp, Mux(is_float, ALU_res, float_res), sign_extend(pc_incr, reg_size))
+    mov_value = Mux(rdtime, Mux(mem_read, computed_val, mem_value), clock)
     mov_to_reg = [Mux(write_enable[i], reg[i], mov_value) for i in range(reg_nb)]
 
 
