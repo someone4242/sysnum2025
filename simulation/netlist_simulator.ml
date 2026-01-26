@@ -1,5 +1,6 @@
 open Netlist_ast
 open Unix
+open Print_date_time
 
 let print_only = ref false
 let number_steps = ref (-1)
@@ -121,6 +122,7 @@ let simulator program number_steps =
   (*---------------------------------------------*)
 
   (*Function to print the outputs*)
+(*
   let print_output id =
     let value_to_str = function
       | VBit t -> if t then "1" else "0"
@@ -128,6 +130,7 @@ let simulator program number_steps =
         String.concat "" (List.map (fun t -> if t then "1" else "0") (Array.to_list arr))
     in
     Printf.printf "%s = %s\n" id (value_to_str (Env.find id (!env))) in
+*)
   (*-----------------------------*)
 
   (*Function to get the value of an argument*)
@@ -244,13 +247,14 @@ let simulator program number_steps =
   (*----------------------------------*)
 
   (*Do a step*)
-  let do_a_step () =
+  let do_a_step step =
     (*Inputs*)
     List.iter parse_input program.p_inputs;
     (*Instructions*)
     List.iter assign_var program.p_eqs;
     (*Outputs*)
-    List.iter print_output program.p_outputs;
+(*     List.iter print_output program.p_outputs; *)
+    print_date_time step !env;
     (*Save registers, update ram*)
     registers := !env;
     update_rams_cycle ()
@@ -260,16 +264,14 @@ let simulator program number_steps =
   if (number_steps >= 0) then
   begin
     for step_i = 1 to number_steps do
-      Printf.printf "Step %d:\n" step_i;
-      do_a_step ();
+      do_a_step step_i;
     done
   end
   else
   begin
     let step = ref 1 in
     while (0 <> 42) do
-      Printf.printf "Step %d:\n" !step;
-      do_a_step ();
+      do_a_step !step;
       incr step;
     done
   end

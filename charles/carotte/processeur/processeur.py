@@ -155,6 +155,12 @@ def main():
     mov_value = Mux(rdtime, Mux(mem_read, computed_val, mem_value), clock)
     mov_to_reg = [Mux(write_enable[i], reg[i], mov_value) for i in range(reg_nb)]
 
+    reg[2].set_as_output("secondes")
+    reg[3].set_as_output("minutes")
+    reg[4].set_as_output("heures")
+    reg[5].set_as_output("jours")
+    reg[6].set_as_output("annees")
+    reg[8].set_as_output("mois")
 
     instr.set_as_output("instruction")
     # reg_src1.set_as_output("rs1")
@@ -188,12 +194,12 @@ def main():
     # jmp.set_as_output("jmp")
     # jmp_offset.set_as_output("jmp_offset")
     # pc_offset.set_as_output("pc_offset")
-    pc.set_as_output("program_counter")
-    next_pc.set_as_output("next_program_counter")
+    # pc.set_as_output("program_counter")
+    # next_pc.set_as_output("next_program_counter")
     # mov_value.set_as_output("mov_value")
     # pc_incr.set_as_output("pc_incr")
     # clock.set_as_output("clock")
     # rdtime.set_as_output("rdtime")
 
-    for i in range(1, 32):
-        reg[i].set_as_output("x" + str(i))
+    # for i in range(1, 32):
+    #     reg[i].set_as_output("x" + str(i))
