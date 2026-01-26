@@ -6,3 +6,4 @@ temp.txt
 default.txt
 simulation/_build
 horloge_tmp.txt
+*.binaire
