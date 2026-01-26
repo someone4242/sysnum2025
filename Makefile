@@ -1,5 +1,5 @@
-simulation/netlist_simulator.byte:
-	cd simulation && make build && cd ..
+simu:
+	ocamlbuild simulation/netlist_simulator.byte
 
 processeur.net:
 	rm -f processeur.net && ./charles/carotte/carotte.py ./charles/carotte/processeur/processeur.py |> processeur.net
