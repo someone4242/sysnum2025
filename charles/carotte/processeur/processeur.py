@@ -82,7 +82,7 @@ def concat(data):
 def main():
     write_enable = 1
     clock = Input(32)
-    stop = Input(1)
+    #stop = Input(1)
     #RAM(addr_size, word_size, read_addr, write_enable, write_addr, write_data)
     pc = RAM(1, pc_size, zero, one, zero, Defer(pc_size, lambda: next_pc)) # program counter
     reg = [RAM(1, reg_size, zero, true, zero, Defer(reg_size, lambda i=i: mov_to_reg[i])) for i in range(2**reg_desc_size)]
