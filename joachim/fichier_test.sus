@@ -3,3 +3,4 @@ main:
     addi x2 x0 1
     sll x3 x1 x2
     srli x4 x1 1
+    rdtime x1
