@@ -135,7 +135,7 @@ def main():
     mov_to_reg = [Mux(write_enable[i], reg[i], mov_value) for i in range(32)]
 
     pc.set_as_output("program_counter")
-    for i in range(32):
+    for i in range(1, 9):
         reg[i].set_as_output("x" + str(i))
     # for i in range(len(write_enable)):
     #     write_enable[i].set_as_output("write_x" + str(i))
