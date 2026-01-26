@@ -47,12 +47,12 @@ str_signal = [
     "00" + "10000000" + "0000010", # blt 
     "00" + "10000000" + "0000010", # bge 
     "00" + "00000000" + "0100001", # rdtime
-    "10" + "00000000" + "0000000", # fadd TODO
-    "10" + "00000000" + "0000000", # fsub TODO
-    "10" + "00000000" + "0000000", # fmul TODO
-    "11" + "00000000" + "0000000", # fdiv TODO
-    "11" + "00000000" + "0000000", # ffisqrt TODO
-    "10" + "00000000" + "0000010", # feq TODO
+    "10" + "00000000" + "0000000", # fadd 
+    "10" + "00000000" + "0000000", # fsub
+    "10" + "00000000" + "0000000", # fmul 
+    "11" + "00000000" + "0000000", # fdiv 
+    "11" + "00000000" + "0000000", # ffisqrt 
+    "10" + "00000000" + "0000010", # feq
 ]
 ctrl_signal = [Constant(str_signal[i]) if i < len(str_signal)
                 else Constant("0" * len(str_signal[0])) for i in range(1 << opcode_len)]
@@ -112,7 +112,10 @@ def main():
     # lecture de l'instruction et préparation des signaux
     instr = ROM(pc_size, instr_size, pc)
     signal_tree = mux_tree(instr[0:opcode_len], opcode_len, ctrl_signal)
-    is_float, float_opcode, sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, srl_alu, mul_alu, isrc, reg_write, mem_write, jmp, mem_read, compare, rdtime = signal_tree[1]
+    (is_float, float_opcode, sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu,
+    srl_alu, mul_alu, isrc, reg_write, mem_write, jmp, mem_read, compare, 
+    rdtime) = signal_tree[1]
+
     imm_i = sign_extend(instr[20:32], word_size)
     imm_s = (instr[7:12] + instr[25:32])[0:pc_size]
     reg_dest = instr[7:12]
@@ -154,43 +157,43 @@ def main():
 
 
     instr.set_as_output("instruction")
-    reg_src1.set_as_output("rs1")
-    reg_src2.set_as_output("rs2")
-    reg_dest.set_as_output("reg_dest")
-    sub_alu.set_as_output("sub")
-    xor_alu.set_as_output("xor")
-    and_alu.set_as_output("and")
-    or_alu.set_as_output("or")
-    not_alu.set_as_output("not")
-    sll_alu.set_as_output("sll")
-    srl_alu.set_as_output("srl")
-    mul_alu.set_as_output("mul")
-    isrc.set_as_output("isrc")
-    imm_i.set_as_output()
-    A.set_as_output("A")
-    B.set_as_output("B")
-    ALU_res.set_as_output("ALU_result")
+    # reg_src1.set_as_output("rs1")
+    # reg_src2.set_as_output("rs2")
+    # reg_dest.set_as_output("regdest")
+    # sub_alu.set_as_output("sub")
+    # xor_alu.set_as_output("xor")
+    # and_alu.set_as_output("and")
+    # or_alu.set_as_output("or")
+    # not_alu.set_as_output("not")
+    # sll_alu.set_as_output("sll")
+    # srl_alu.set_as_output("srl")
+    # mul_alu.set_as_output("mul")
+    # isrc.set_as_output("isrc")
+    # imm_i.set_as_output()
+    # A.set_as_output("A")
+    # B.set_as_output("B")
+    # ALU_res.set_as_output("ALUresult")
 
-    pc.set_as_output("program_counter")
+    # pc.set_as_output("program_counter")
+    # all_write = concat(write_enable)
+    # all_write.set_as_output("write")
+    # reg_write.set_as_output("regwrite")
+    # GE.set_as_output("ge")
+    # E.set_as_output("e")
+    # NE.set_as_output("ne")
+    # LT.set_as_output("lt")
+    # branch.set_as_output("branch")
+    # condition.set_as_output("condition")
+    # imm_s.set_as_output("imms")
+    # jmp.set_as_output("jmp")
+    # jmp_offset.set_as_output("jmpoffset")
+    # pc_offset.set_as_output("pcoffset")
+    # pc.set_as_output("programcounter")
+    # next_pc.set_as_output("nextprogramcounter")
+    # mov_value.set_as_output("movvalue")
+    # pc_incr.set_as_output("pcincr")
+    # clock.set_as_output("clock")
+    # rdtime.set_as_output("rdtime")
 
-    for i in range(1, 32):
+    for i in range(2, 3):
         reg[i].set_as_output("x" + str(i))
-    all_write = concat(write_enable)
-    all_write.set_as_output("write")
-    reg_write.set_as_output("reg_write")
-    GE.set_as_output("ge")
-    E.set_as_output("e")
-    NE.set_as_output("ne")
-    LT.set_as_output("lt")
-    branch.set_as_output("branch")
-    condition.set_as_output("condition")
-    imm_s.set_as_output("imm_s")
-    jmp.set_as_output("jmp")
-    jmp_offset.set_as_output("jmp_offset")
-    pc_offset.set_as_output("pc_offset")
-    pc.set_as_output("program_counter")
-    next_pc.set_as_output("next_program_counter")
-    mov_value.set_as_output("mov_value")
-    pc_incr.set_as_output("pc_incr")
-    clock.set_as_output("clock")
-    rdtime.set_as_output("rdtime")
