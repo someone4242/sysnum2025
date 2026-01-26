@@ -134,7 +134,7 @@ for i in range(len(instr)):
         }
         result = prefix_float[op] + to_base_2(rs2, 5) + to_base_2(rs1, 5) + three_bits[op] + to_base_2(rd, 5) + op_codes[op]
         print(result[::-1], file=fdw)
-    elif op in ["ffisqrt"]:
+    elif op in ["ffisqrt", "fcvt.w"]:
         if (len(args) != 3):
             raise ValueError(f"Line {i} : {op} takes 2 arguments")
         rd = read_reg(args[1])
