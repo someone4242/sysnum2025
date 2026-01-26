@@ -8,3 +8,4 @@ simulation/_build
 horloge_tmp.txt
 *.binaire
 _build
+__pycache__

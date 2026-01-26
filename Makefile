@@ -1,8 +1,17 @@
 simu:
-	ocamlbuild simulation/netlist_simulator.byte
+	./script_compil_simu.sh
 
-processeur.net:
-	rm -f processeur.net && ./charles/carotte/carotte.py ./charles/carotte/processeur/processeur.py |> processeur.net
+clean:
+	rm -r simulation/_build
+	rm -r _build
+	rm -r __pycache__
+	rm netlist_simulator.byte
+	rm -f processeur.net 
 
-run: processeur.net simulation/netlist_simulator.byte
-	rm -f processeur.net &&	./charles/carotte/carotte.py ./charles/carotte/processeur/processeur.py |> processeur.net && simulation/netlist_simulator.byte -rom program.txt processeur.net 
+proc:
+	rm -f processeur.net 
+	./file_proc/carotte.py -o processeur.net ./file_proc/processeur/processeur.py
+
+all:
+	make simu
+	make proc
