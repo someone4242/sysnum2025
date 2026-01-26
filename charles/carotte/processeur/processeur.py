@@ -35,17 +35,17 @@ str_signal = [
     "00000001" + "0100000", # mul 
     "00000000" + "0100100", # lw TO check
     "00000000" + "0101000", # jal TO check
-    "00000000" + "0100010", # beq 
-    "00000000" + "0100010", # bne 
-    "00000000" + "0100010", # blt 
-    "00000000" + "0100010", # bge 
+    "10000000" + "0000010", # beq 
+    "10000000" + "0000010", # bne 
+    "10000000" + "0000010", # blt 
+    "10000000" + "0000010", # bge 
     "00000000" + "0100001", # rdtime TO check
-    "00000000" + "0100000", # fadd TODO
-    "00000000" + "0100000", # fsub TODO
-    "00000000" + "0100000", # fmul TODO
-    "00000000" + "0100000", # fdiv TODO
-    "00000000" + "0100000", # ffisqrt TODO
-    "00000000" + "0100000", # feq TODO
+    "00000000" + "0000000", # fadd TODO
+    "00000000" + "0000000", # fsub TODO
+    "00000000" + "0000000", # fmul TODO
+    "00000000" + "0000000", # fdiv TODO
+    "00000000" + "0000000", # ffisqrt TODO
+    "00000000" + "0000000", # feq TODO
 ]
 ctrl_signal = [Constant(str_signal[i]) if i < len(str_signal)
                 else Constant("0" * len(str_signal[0])) for i in range(1 << opcode_len)]
@@ -79,6 +79,9 @@ def concat(data):
     mid = len(data)//2 
     return Concat(concat(data[:mid]), concat(data[mid:]))
 
+def sign_extend(data, length):
+    return concat([data] + ([data[len(data)-1]] * (length - len(data))))
+
 def main():
     write_enable = 1
     clock = Input(32)
@@ -92,13 +95,13 @@ def main():
     instr = ROM(pc_size, instr_size, pc)
     signal_tree = mux_tree(instr[1:1+opcode_len], opcode_len, ctrl_signal)
     sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, srl_alu, mul_alu, isrc, reg_write, mem_write, jmp, mem_read, branch, rdtime = signal_tree[1]
-    imm_i = Concat(instr[20:32], Constant("0"*20))
+    imm_i = sign_extend(instr[20:32], word_size)
     imm_s = Concat(instr[7:12], instr[25:32])[0:pc_size]
     reg_dest = instr[7:12]
     reg_src1 = instr[15:20]
     reg_src2 = instr[20:25]
     jmp_offset = instr[12:12+pc_size]
-    mem_offset = Concat(instr[20:32], Constant("0"*20))
+    mem_offset = imm_i
     rs1_value = mux_tree(reg_src1, reg_desc_size, reg)[1]
     rs2_value = mux_tree(reg_src2, reg_desc_size, reg)[1]
     A = rs1_value
@@ -123,7 +126,7 @@ def main():
 
 
     # calcul de mov_value
-    mov_value = Mux(rdtime, Mux(mem_read, Mux(jmp, ALU_res, Concat(pc_incr, Constant("0"*(reg_size - pc_size)))), mem_value), clock)
+    mov_value = Mux(rdtime, Mux(mem_read, Mux(jmp, ALU_res, sign_extend(pc_incr, reg_size)), mem_value), clock)
     mov_to_reg = [Mux(write_enable[i], reg[i], mov_value) for i in range(reg_nb)]
 
 
@@ -147,9 +150,8 @@ def main():
 
     pc.set_as_output("program_counter")
 
-    for i in range(1, 9):
+    for i in range(1, 32):
         reg[i].set_as_output("x" + str(i))
-    reg[30].set_as_output("x" + str(30))
     all_write = concat(write_enable)
     all_write.set_as_output("write")
     reg_write.set_as_output("reg_write")
