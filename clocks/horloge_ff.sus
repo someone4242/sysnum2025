@@ -35,6 +35,102 @@ bi_2:
     addi x26 x0 28
 
 
+    addi x29 x0 0
+    rdtime x30
+    sub x31 x30 x29
+
+    addi x28 x0 1
+    addi x29 x0 0
+    addi x30 x0 0
+
+
+correct_y:
+    blt x31 x23 correct_d
+    sub x31 x31 x22
+    beq x7 x0 skip
+    sub x31 x31 x21
+skip:
+    addi x6 x6 1
+    andi x7 x6 3
+    beq x7 x0 bi_3
+    addi x7 x0 0
+    jal x0 bi_4
+bi_3:
+    addi x7 x0 1
+bi_4:
+    jal x0 correct_y
+correct_d:
+    blt x31 x22 correct_h
+    sub x31 x31 x22
+    addi x5 x5 1
+    jal x0 correct_d
+correct_h:
+    blt x31 x21 correct_m
+    sub x31 x31 x21
+    addi x4 x4 1
+    jal x0 correct_h
+correct_m:
+    blt x31 x18 correct_s
+    sub x31 x31 x18
+    addi x3 x3 1
+    jal x0 correct_m
+correct_s:
+    add x2 x2 x31
+    addi x31 x0 0
+
+jan0:
+    addi x11 x5 -1
+    addi x8 x0 1
+    blt x11 x24 main
+    sub x11 x11 x24
+feb0:
+    addi x8 x8 1
+    add x12 x26 x7
+    blt x11 x12 main
+    sub x11 x11 x12
+mar0:
+    addi x8 x8 1
+    blt x11 x24 main
+    sub x11 x11 x24
+apr0:
+    addi x8 x8 1
+    blt x11 x25 main
+    sub x11 x11 x25
+may0:
+    addi x8 x8 1
+    blt x11 x24 main
+    sub x11 x11 x24
+jun0:
+    addi x8 x8 1
+    blt x11 x25 main
+    sub x11 x11 x25
+jul0:
+    addi x8 x8 1
+    blt x11 x24 main
+    sub x11 x11 x24
+aug0:
+    addi x8 x8 1
+    blt x11 x24 main
+    sub x11 x11 x24
+sep0:
+    addi x8 x8 1
+    blt x11 x25 main
+    sub x11 x11 x25
+oct0:
+    addi x8 x8 1
+    blt x11 x24 main
+    sub x11 x11 x24
+nov0:
+    addi x8 x8 1
+    blt x11 x25 main
+    sub x11 x11 x25
+dec0:
+    addi x8 x8 1
+    jal x0 main
+
+
+
+
 main:
 ret:
     jal x0 full_incr

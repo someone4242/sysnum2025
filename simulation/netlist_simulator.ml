@@ -100,7 +100,7 @@ let simulator program number_steps =
       env := Env.add id (VBitArray arr) (!env)
     end
     else if id = "clock" then begin
-        let time = Unix.time () -. begin_time in
+        let time = Unix.gettimeofday () -. begin_time in
         let clock_time = time -. (Float.trunc time) in
         let arr = Array.make 32 false in
         arr.(0) <- clock_time < 0.5;

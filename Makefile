@@ -2,7 +2,7 @@ simu:
 	./script_compil_simu.sh
 
 clean:
-	-rm -r simulation/_build
+	-rm -rf simulation/_build
 	-rm -r _build
 	-rm -r __pycache__
 	-rm netlist_simulator.byte
