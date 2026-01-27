@@ -166,6 +166,8 @@ def main():
     reg[6].set_as_output("annees")
     reg[8].set_as_output("mois")
 
+    clock.set_as_output("clock")
+    time.set_as_output("time")
     instr.set_as_output("instruction")
     # reg_src1.set_as_output("rs1")
     # reg_src2.set_as_output("rs2")
