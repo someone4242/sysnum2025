@@ -15,3 +15,13 @@ proc:
 all:
 	make simu
 	make proc
+
+clock:
+	make all
+	python3 compilation.py -o clock/horloge_rdtime.txt clock/horloge_rdtime.sus
+	./netlist_simulator.byte -rom clock/horloge_rdtime.txt processeur.net
+
+clockff:
+	make all
+	python3 compilation.py -o clock/horloge_ff.txt clock/horloge_ff.sus
+	./netlist_simulator.byte -rom clock/horloge_ff.txt processeur.net

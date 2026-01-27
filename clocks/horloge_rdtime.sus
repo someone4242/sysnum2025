@@ -42,7 +42,6 @@ bi_2:
     addi x28 x0 1
     addi x29 x0 0
     addi x30 x0 0
-    add
 
 
 correct_y:

@@ -182,7 +182,7 @@ for i in range(len(instr)):
         result = "0"*20 + to_base_2(rd, 5) + op_codes[op]
         print(result[::-1], file=fdw)
     else:
-        raise ValueError("Opération non existante")
+        raise ValueError(f"Opération {op} non existante")
         
     
 

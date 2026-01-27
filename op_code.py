@@ -28,7 +28,8 @@ op_codes = {
     "ffisqrt":"0011010",
     "feq" :   "0011011",
     "fcvt.w": "0011100",  #flottant vers entier
-    "fcvt.s" :"0011101"   #entier vers flottant
+    "fcvt.s" :"0011101",  #entier vers flottant
+    "rdclock":"0011110"
 }
 
 three_bits = {
