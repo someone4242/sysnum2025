@@ -63,8 +63,8 @@ Que modifier pour avoir les flottants en 32 bits au lieu de 16?
 | *fadder_et_fmultiplie.py* | 16 bits                    | 32 bits                    |
 |----------------------------|----------------------------|----------------------------|
 | *retire_zeros_gauche* | `exposant = adder(exposant,Constant("0"*exposant.bus_size),mantisse[21])[0]`    | `exposant = adder(exposant,Constant("0"*exposant.bus_size),mantisse[47])[0]`    |
-| *retire_zeros_gauche* | `doit_sarreter = comparer.fegal_zero(mantisse[10:])` | `doit_sarreter = comparer.fegal_zero(mantisse[23:])` |
-| *retire_zeros_gauche* | `doit_sarreter = doit_sarreter \| comparer.fegal_zero(mantisse[10:])` | `doit_sarreter = doit_sarreter \| comparer.fegal_zero(mantisse[23:])` |
+| *retire_zeros_gauche* | `doit_sarreter = comparer.fegal_zero(mantisse[11:])` | `doit_sarreter = comparer.fegal_zero(mantisse[23:])` |
+| *retire_zeros_gauche* | `doit_sarreter = doit_sarreter \| comparer.fegal_zero(mantisse[11:])` | `doit_sarreter = doit_sarreter \| comparer.fegal_zero(mantisse[23:])` |
 
 | *convert.py* | 16 bits                    | 32 bits                    |
 |----------------------------|----------------------------|----------------------------|

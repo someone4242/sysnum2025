@@ -66,10 +66,10 @@ def fadd(a: Variable, b: Variable) -> Variable:
 
 def retire_zeros_gauche(mantisse: Variable, exposant: Variable) -> typing.Tuple[Variable, Variable]:
     exposant = adder(exposant,Constant("0"*exposant.bus_size),mantisse[21])[0]
-    doit_sarreter = comparer.fegal_zero(mantisse[10:])
+    doit_sarreter = comparer.fegal_zero(mantisse[11:])
     for i in range(mantisse.bus_size):
         mantisse = Mux(doit_sarreter, mantisse[1:]+Constant("0"), mantisse)
-        doit_sarreter = doit_sarreter | comparer.fegal_zero(mantisse[10:])
+        doit_sarreter = doit_sarreter | comparer.fegal_zero(mantisse[11:])
     return mantisse,exposant
 
 
@@ -138,5 +138,6 @@ def main() -> None:
     #r = fmultiplie(a,b)
     r = fdivise(a,b)
     r.set_as_output("z")
+
 
 
