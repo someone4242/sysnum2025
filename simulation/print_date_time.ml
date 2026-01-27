@@ -25,8 +25,8 @@ let print_date_time step env =
         ("minutes", "min");
         ("heures", "h");
         ("jours", "day");
-        ("annees", "year");
-        ("mois", "month")
+        ("mois", "month");
+        ("annees", "year")
     ] in
     let print_elt (id, label) =
         try (

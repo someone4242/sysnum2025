@@ -53,6 +53,9 @@ str_signal = [
     "11" + "00000000" + "0000000", # fdiv 
     "11" + "00000000" + "0000000", # ffisqrt 
     "10" + "00000000" + "0000010", # feq
+    "00" + "00000000" + "0000000", # fcvt.w flottant vers entier
+    "00" + "00000000" + "0000000", # fcvt.s entier vers flottant
+    "00" + "00000000" + "0100001"  # rdclock
 ]
 ctrl_signal = [Constant(str_signal[i]) if i < len(str_signal)
                 else Constant("0" * len(str_signal[0])) for i in range(1 << opcode_len)]
@@ -103,6 +106,7 @@ def float_operation(A, B, eq, sub, mul, div, isqrt):
 def main():
     write_enable = 1
     clock = Input(word_size)
+    time = Input(word_size)
     #stop = Input(1)
     #RAM(addr_size, word_size, read_addr, write_enable, write_addr, write_data)
     pc = RAM(1, pc_size, zero, one, zero, Defer(pc_size, lambda: next_pc)) # program counter
@@ -111,6 +115,34 @@ def main():
 
     # lecture de l'instruction et préparation des signaux
     instr = ROM(pc_size, instr_size, pc)
+    "00" + "00000000" + "0100000", # add  
+    "00" + "00000000" + "1100000", # addi 
+    "00" + "00100000" + "0100000", # and  
+    "00" + "00100000" + "1100000", # andi 
+    "00" + "00010000" + "0100000", # or   
+    "00" + "00010000" + "1100000", # ori  
+    "00" + "01000000" + "0100000", # xor  
+    "00" + "01000000" + "1100000", # xori 
+    "00" + "10000000" + "0100000", # sub  
+    "00" + "00000000" + "0010000", # sw 
+    "00" + "00000010" + "0100000", # sll
+    "00" + "00000010" + "1100000", # slli
+    "00" + "00000100" + "0100000", # srl
+    "00" + "00000100" + "1100000", # srli
+    "00" + "00000001" + "0100000", # mul 
+    "00" + "00000000" + "0100100", # lw 
+    "00" + "00000000" + "0101000", # jal 
+    "00" + "10000000" + "0000010", # beq 
+    "00" + "10000000" + "0000010", # bne 
+    "00" + "10000000" + "0000010", # blt 
+    "00" + "10000000" + "0000010", # bge 
+    "00" + "00000000" + "0100001", # rdtime
+    "10" + "00000000" + "0000000", # fadd 
+    "10" + "00000000" + "0000000", # fsub
+    "10" + "00000000" + "0000000", # fmul 
+    "11" + "00000000" + "0000000", # fdiv 
+    "11" + "00000000" + "0000000", # ffisqrt 
+    "10" + "00000000" + "0000010", # feq
     signal_tree = mux_tree(instr[0:opcode_len], opcode_len, ctrl_signal)
     (is_float, float_opcode, sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu,
     srl_alu, mul_alu, isrc, reg_write, mem_write, jmp, mem_read, compare, 
@@ -152,7 +184,7 @@ def main():
 
     # calcul de mov_value
     computed_val = Mux(jmp, Mux(is_float, ALU_res, float_res), sign_extend(pc_incr, reg_size))
-    mov_value = Mux(rdtime, Mux(mem_read, computed_val, mem_value), clock)
+    mov_value = Mux(rdtime, Mux(mem_read, computed_val, mem_value), Mux(instr[0], clock, time))
     mov_to_reg = [Mux(write_enable[i], reg[i], mov_value) for i in range(reg_nb)]
 
     reg[2].set_as_output("secondes")
