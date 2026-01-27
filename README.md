@@ -1,5 +1,10 @@
 # Rapport de conception microprocesseur
 
+Note importante : le module de flottant étant très lent à compiler, il n'y est 
+pas par défaut. Pour le charger, il faut modifier la ligne 142 du fichier 
+file_proc/processeur/processeur.py 
+(les instructions précises sont en commentaire).
+
 ## Organisation du dossier
 
 Le dossier contient différents éléments qui sont listés ici :
@@ -77,8 +82,7 @@ place l'adresse de retour dans `rd`
 - `bne`, `blt`, `bge` : Même syntaxe, mais sautent respectivement si
 `rs1 =\= rs2`, `rs1 < rs2` et `rs1 >= rs2`
 - `rditme rd` : Place le nombre de secondes depuis 01/01/2026 dans `rd`
-- `rdclock rd` : Indique dans `rd` si l'horloge est en front montant ou 
-descendant
+- `rdclock rd` : Place dans `rd` l'état de la clock
 - `fadd`, `fsub`, `fmul` et `fdiv` : Ont la même syntaxe que `add` et 
 correspondent aux opérations usuelles sur les flottants
 - `fes rd rs1 rs2` : Place 1 dans `rd` si les flottants `rs1` et `rs2` sont 
