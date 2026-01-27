@@ -37,9 +37,12 @@ bi_2:
 
     addi x29 x0 0
     rdtime x30
-
     sub x31 x30 x29
-    addi x29 x30 0
+
+    addi x28 x0 1
+    addi x29 x0 0
+    addi x30 x0 0
+    add
 
 
 correct_y:
@@ -129,12 +132,12 @@ dec0:
 
 
 main:
-    rdtime x30
+ret:
+    rdclock x30
     sub x31 x30 x29
     addi x29 x30 0
-ret:
-    beq x31 x0 main
-    addi x31 x31 -1
+
+    bne x31 x28 main
 
 
 full_incr:
