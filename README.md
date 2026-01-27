@@ -88,9 +88,58 @@ la racine carré inverse de rs1 dans rd.
 - `fcvt.w rd rs1` : Convertit le flottant `rs1` en entier dans `rd`
 - `fcvt.s` : De même mais pour la conversion entier vers flottant
 
+## ALU
+
+Nous avons implémenté une ALU simple en suivant le TD2:
+- N-bits adder avec carry-lookahead
+- Opération de soustraction dérivée
+- Opérations logiques : not, and, xor, or
+- Opérations de shift : sll, srl
+- Multiplication d'entiers
+- Flags CVNZ (Carry, Overflow, Negative, Zero)
+
+## Horloge
+
+L'horloge est codée avec nos instructions simples : add, addi, sub, jal, beq,
+bne, blt, slli.
+
+Nous ne reprenons pas les conventions de registres RSIC-V (sauf x0) au vu de la
+simplicité de l'implémentation, et nous prenons donc avantage du grand
+nombre de registres disponibles pour les utiliser de différentes manières :
+- Contenir des constantes, pour simplifier des opérations futures, et obtenir
+des constantes sur 32 bits (par rapport aux immidiates sur 12 bits).
+- Maintenir les unités de temps de l'état actuel:
+    - x2 : secondes
+    - x3 : minutes
+    - x4 : heures
+    - x5 : jours
+    - x6 : années
+    - x7 : 1 si x6 est bissextile, 0 sinon
+    - x8 : mois
+- Manipuler les entrées de temps (x29, x30, x31).
+
+Fonctionnement de l'horloge classique :
+- Initialisation à l'état 00:00 01/01/2026
+- Récupérer le temps actuel avec rdtime, et actualiser l'état en accéléré
+- Boucler sur la clock (avec rdclock), et incrémenter 1 seconde à chaque front
+monant
+
+Fonctionnement de l'horloge en *fast-forward* (ff) :
+- Initialisation à l'état 00:00 01/01/2026
+- Récupérer le temps actuel avec rdtime, et actualiser l'état en accéléré
+- Boucler sur l'incrémentation de 1 seconde (sans prendre en compte la clock).
+
+Particularités:
+- Le mois est mis à jour après chaque incrémentation de journée
+- Les années bissextiles sont à peu près prises en compte (la condition
+sur 400 ans n'est pas respectée).
+- Les jours sont représentés sur l'année, et non sur le mois (ce qui respecte
+en tout point le sujet).
+
 ## Note sur l'utilisation de l'IA
 
 Malgré notre avance déraisonnable sur la deadline, nous avons demandé à 
 Gemini de nous faire l'affichage stylé de l'horloge, car nous ne sommes pas des 
 élèves du département des arts . 
 L'entièreté du code restant a été écrit à la main.
+
