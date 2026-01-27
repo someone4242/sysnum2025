@@ -115,34 +115,6 @@ def main():
 
     # lecture de l'instruction et préparation des signaux
     instr = ROM(pc_size, instr_size, pc)
-    "00" + "00000000" + "0100000", # add  
-    "00" + "00000000" + "1100000", # addi 
-    "00" + "00100000" + "0100000", # and  
-    "00" + "00100000" + "1100000", # andi 
-    "00" + "00010000" + "0100000", # or   
-    "00" + "00010000" + "1100000", # ori  
-    "00" + "01000000" + "0100000", # xor  
-    "00" + "01000000" + "1100000", # xori 
-    "00" + "10000000" + "0100000", # sub  
-    "00" + "00000000" + "0010000", # sw 
-    "00" + "00000010" + "0100000", # sll
-    "00" + "00000010" + "1100000", # slli
-    "00" + "00000100" + "0100000", # srl
-    "00" + "00000100" + "1100000", # srli
-    "00" + "00000001" + "0100000", # mul 
-    "00" + "00000000" + "0100100", # lw 
-    "00" + "00000000" + "0101000", # jal 
-    "00" + "10000000" + "0000010", # beq 
-    "00" + "10000000" + "0000010", # bne 
-    "00" + "10000000" + "0000010", # blt 
-    "00" + "10000000" + "0000010", # bge 
-    "00" + "00000000" + "0100001", # rdtime
-    "10" + "00000000" + "0000000", # fadd 
-    "10" + "00000000" + "0000000", # fsub
-    "10" + "00000000" + "0000000", # fmul 
-    "11" + "00000000" + "0000000", # fdiv 
-    "11" + "00000000" + "0000000", # ffisqrt 
-    "10" + "00000000" + "0000010", # feq
     signal_tree = mux_tree(instr[0:opcode_len], opcode_len, ctrl_signal)
     (is_float, float_opcode, sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu,
     srl_alu, mul_alu, isrc, reg_write, mem_write, jmp, mem_read, compare, 
@@ -167,7 +139,7 @@ def main():
     # calcul du résultat de l'ALU et des flags
     float_div = Mux(float_opcode, false, instr[0])
     float_isqrt = Mux(float_opcode, false, instr[1])
-    float_res = zero_32bit#float_operation(A, B, compare, sub_alu, mul_alu, float_div, float_isqrt)
+    float_res = zero_32bit # remplacer par float_operation(A, B, compare, sub_alu, mul_alu, float_div, float_isqrt) pour activer les opérations flottantes
     write_enable = demux_tree(reg_dest, reg_desc_size, [reg_write])
     ALU_res, C, V, N, Z = ALU(5, A, B, sub_alu, xor_alu, and_alu, or_alu, not_alu, sll_alu, srl_alu, mul_alu)
     E, LT = Z, N 
@@ -195,43 +167,3 @@ def main():
     reg[8].set_as_output("mois")
 
     instr.set_as_output("instruction")
-    # reg_src1.set_as_output("rs1")
-    # reg_src2.set_as_output("rs2")
-    # reg_dest.set_as_output("reg_dest")
-    # sub_alu.set_as_output("sub")
-    # xor_alu.set_as_output("xor")
-    # and_alu.set_as_output("and")
-    # or_alu.set_as_output("or")
-    # not_alu.set_as_output("not")
-    # sll_alu.set_as_output("sll")
-    # srl_alu.set_as_output("srl")
-    # mul_alu.set_as_output("mul")
-    # isrc.set_as_output("isrc")
-    # imm_i.set_as_output()
-    # A.set_as_output("A")
-    # B.set_as_output("B")
-    # ALU_res.set_as_output("ALU_result")
-
-    # pc.set_as_output("program_counter")
-    # all_write = concat(write_enable)
-    # all_write.set_as_output("write")
-    # reg_write.set_as_output("reg_write")
-    # GE.set_as_output("ge")
-    # E.set_as_output("e")
-    # NE.set_as_output("ne")
-    # LT.set_as_output("lt")
-    # branch.set_as_output("branch")
-    # condition.set_as_output("condition")
-    # imm_s.set_as_output("imm_s")
-    # jmp.set_as_output("jmp")
-    # jmp_offset.set_as_output("jmp_offset")
-    # pc_offset.set_as_output("pc_offset")
-    # pc.set_as_output("program_counter")
-    # next_pc.set_as_output("next_program_counter")
-    # mov_value.set_as_output("mov_value")
-    # pc_incr.set_as_output("pc_incr")
-    # clock.set_as_output("clock")
-    # rdtime.set_as_output("rdtime")
-
-    # for i in range(1, 32):
-    #     reg[i].set_as_output("x" + str(i))
