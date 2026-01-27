@@ -63,11 +63,12 @@ let display_clock sec min hour doy year =
     List.map (fun d -> `Digit d) (to_digits year)
   in
 
-  print_endline "\n================== HEURE ==================";
+  print_endline "================== HEURE ==================";
   for i = 0 to 4 do print_row time_line i done;
   
   print_endline "\n================== DATE ===================";
-  for i = 0 to 4 do print_row date_line i done
+  for i = 0 to 4 do print_row date_line i done;
+  print_string "\n"
 
 let bits_to_int = function VBit _ -> failwith "bad output"
     | VBitArray a ->
