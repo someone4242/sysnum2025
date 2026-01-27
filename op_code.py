@@ -57,7 +57,8 @@ three_bits = {
     "ffisqrt" : "000"
 }
 
-fd = open('../opcode.md', 'w')
-for (key, value) in op_codes.items():
-    print(f"{key} -> {value}", file=fd)
-fd.close()
+
+#fd = open('../opcode.md', 'w')
+#for (key, value) in op_codes.items():
+#    print(f"{key} -> {value}", file=fd)
+#fd.close()

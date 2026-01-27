@@ -1,22 +1,17 @@
+# Rapport de conception microprocesseur
 
-https://github.com/hbens/sysnum-2025
+## Organisation du dossier
 
-https://docs.riscv.org/reference/isa/_attachments/riscv-unprivileged.pdf (add: page 28)
+Le dossier contient différents éléments qui sont listés ici :
+- Un `makefile` dont les fonctionnalités sont détaillées ci-dessous
+- Les fichiers `compilation.py` et `op_code.py` qui servent au compilateur
+du langage assembleur (détaillé plus loin)
+- Un dossier `clocks` qui contient les codes sources des horloges
+- Un dossier `test` avec quelques programmes assembleurs utilisés pour les 
+phases de test
+- Un dossier `simulation` qui contient les fichiers sources du simulateur de
+netlist
+- Un dossier `file_proc` avec les fichiers sources du compilateur
+- Un fichier `script_compil_simu.sh` dont il ne faut pas trop se soucier si vous
+tenez à votre vie ainsi qu'à celle de votre famille
 
-# Rapport de conception du microprocesseur
-
-Fragment de RISC-V avec architecture de type Harvard.
-
-Instructions de base : add, xor, and, or, addi, load, store, jmp, jz.
-
-ALU comme en TD, avec flags NZCV.
-
-Registres : RV32I (registres x1 à x31, avec x0 le registre NULL).
-
-Propositions d'instructions supplémentaires :
-- min, max
-- bit shift
-- multiplicateur: mul (riscv: page 69)
-
-multiplication inverse rapide avec flottant 16 bits . (page 119 pour 32bits)
-NE SURTOUT PAS RESPECTER LA NORME STANDARD!!!!!
