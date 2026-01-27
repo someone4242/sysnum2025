@@ -90,14 +90,21 @@ let simulator program number_steps =
 
   (*Function to parse the input given by the user*)
   let parse_input id =
-    if id = "clock" then begin
-      let clock = ref (Float.to_int ((Unix.time ()) -. begin_time)) in 
+    if id = "time" then begin
+      let time = ref (Float.to_int ((Unix.time ()) -. begin_time)) in 
       let arr = Array.make 32 false in 
       for i = 0 to 31 do 
-        arr.(i) <- ((!clock mod 2) = 1);
-        clock := !clock / 2
+        arr.(i) <- ((!time mod 2) = 1);
+        time := !time / 2
       done;
       env := Env.add id (VBitArray arr) (!env)
+    end
+    else if id = "clock" then begin
+        let time = Unix.time () -. begin_time in
+        let clock_time = time -. (Float.trunc time) in
+        let arr = Array.make 32 false in
+        arr.(0) <- clock_time <. 0.5;
+        env := Env.add id (VBitArray arr) (!env)
     end
     else begin 
       let is_correct_parsing ip =
